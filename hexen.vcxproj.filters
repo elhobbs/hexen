@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="3ds">
+      <UniqueIdentifier>{f731ee7b-0c4a-41b4-b393-cc95847c47e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{9f52aa1c-8b91-40ad-8d72-09abf9bb53cb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="3ds\main.c">
+      <Filter>3ds</Filter>
+    </ClCompile>
+    <ClCompile Include="source\H2_MAIN.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\M_MISC.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\W_WAD.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ST_START.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MN_MENU.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\I_SOUND.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\I_IBM.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\I_CYBER.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\I_CDMUS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\D_NET.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Z_ZONE.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SV_SAVE.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TABLES.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\V_VIDEO.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SC_MAN.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SN_SONIX.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SOUNDS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\R_MAIN.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\R_PLANE.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\R_SEGS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\R_THINGS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SB_BAR.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_THINGS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_TICK.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_USER.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PO_MAN.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\R_BSP.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\R_DATA.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\R_DRAW.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_SETUP.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_SIGHT.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_SPEC.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_SWITCH.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_TELEPT.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_MAP.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_MAPUTL.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_MOBJ.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_PLATS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_PSPR.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_ENEMY.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_FLOOR.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_INTER.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_LIGHTS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_ACS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_ANIM.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_CEILNG.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\P_DOORS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\INFO.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\G_GAME.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\IN_LUDE.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\AM_MAP.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CT_CHAT.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\F_FINALE.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\A_ACTION.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TEMPLATE.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3ds\3ds_sound.c">
+      <Filter>3ds</Filter>
+    </ClCompile>
+    <ClCompile Include="3ds\dbopl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3ds\opl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3ds\opl_queue.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3ds\musplay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\AM_DATA.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AM_MAP.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CT_CHAT.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DRCOORD.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DSTRINGS.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\H2DEF.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\I_CDMUS.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\I_HEADER.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\I_SOUND.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\INFO.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\P_LOCAL.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\P_SPEC.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\R_LOCAL.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SOUNDS.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SOUNDST.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ST_START.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TEXTDEFS.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VGAVIEW.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XDDEFS.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="3ds\dbopl.h" />
+    <ClInclude Include="3ds\opl.h" />
+    <ClInclude Include="3ds\opl_queue.h" />
+    <ClInclude Include="3ds\musplay.h" />
+  </ItemGroup>
+</Project>
