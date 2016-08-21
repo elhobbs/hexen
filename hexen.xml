@@ -1,0 +1,6 @@
+<services autodetect="false">
+	<request priority="1">dsp::DSP</request>
+</services>
+<targets selectable="false">
+  <title mediatype="1">000400000015fa00</title>
+</targets>

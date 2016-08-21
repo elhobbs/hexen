@@ -123,6 +123,7 @@
     <ClCompile Include="3ds\dbopl.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="3ds\keyboard.c" />
     <ClCompile Include="3ds\main.c" />
     <ClCompile Include="3ds\musplay.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
@@ -193,6 +194,7 @@
     <ClInclude Include="3ds\dbopl.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="3ds\keyboard.h" />
     <ClInclude Include="3ds\musplay.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
     </ClInclude>

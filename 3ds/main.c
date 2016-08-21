@@ -17,6 +17,8 @@ byte *pcscreen, *destscreen, *destview;
 extern  doomcom_t *doomcom;
 extern byte *subscreen;
 
+void keyboard_init();
+
 int main(int argc, char**argv)
 {
 #ifdef _3DS
@@ -24,6 +26,7 @@ int main(int argc, char**argv)
 	consoleInit(GFX_BOTTOM, 0);
 	consoleSetWindow(0, 0, 0, 40, 19);
 	osSetSpeedupEnable(true);
+	keyboard_init();
 #endif
 
 	printf("gfx init complete\n");
@@ -139,7 +142,7 @@ void I_Init(void)
 	//novideo = M_CheckParm("novideo");
 	//ST_Message("  I_StartupMouse ");
 	//I_StartupMouse();
-	ST_Message("  S_Init... ");
+	ST_Message("S_Init... ");
 	S_Init();
 	S_Start();
 }
@@ -433,6 +436,9 @@ void copy_subscreen(int side) {
 int UpdateState;
 extern int screenblocks;
 
+void keyboard_draw();
+
+
 void I_Update(void)
 {
 	int i;
@@ -526,6 +532,7 @@ void I_Update(void)
 #ifdef _3DS
 	copy_screen(GFX_LEFT);
 	copy_subscreen(GFX_LEFT);
+	keyboard_draw();
 	gfxFlushBuffers();
 	gfxSwapBuffers();
 #endif
@@ -571,6 +578,8 @@ int keys3ds[32][3] = {
 	{ KEY_CPAD_UP,		KEYD_CPAD_UP,		0 }, //bit 30
 	{ KEY_CPAD_DOWN,	KEYD_CPAD_DOWN,		0 }, //bit 31*/
 };
+
+void keyboard_input();
 
 void DS_Controls(void) {
 	touchPosition touch;
@@ -634,10 +643,12 @@ void DS_Controls(void) {
 		g_lastTouch.px = (g_lastTouch.px + g_currentTouch.px) / 2;
 		g_lastTouch.py = (g_lastTouch.py + g_currentTouch.py) / 2;
 	}
-
 }
 #else
 void DS_Controls() {
+
+}
+void keyboard_input() {
 
 }
 #endif
@@ -655,6 +666,7 @@ void I_StartFrame(void)
 {
 	//printf("+");
 	DS_Controls();
+	keyboard_input();
 #if 0
 	I_JoystickEvents();
 	if (useexterndriver)

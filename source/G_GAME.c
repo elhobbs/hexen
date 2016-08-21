@@ -1766,7 +1766,6 @@ void G_DoSaveGame(void)
 void G_DeferredNewGame(skill_t skill)
 {
 	TempSkill = skill;
-	printf("G_DeferredNewGame: %d\n", gameaction);
 	gameaction = ga_newgame;
 }
 

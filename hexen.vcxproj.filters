@@ -202,6 +202,9 @@
     <ClCompile Include="3ds\musplay.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="3ds\keyboard.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AM_DATA.H">
@@ -265,5 +268,6 @@
     <ClInclude Include="3ds\opl.h" />
     <ClInclude Include="3ds\opl_queue.h" />
     <ClInclude Include="3ds\musplay.h" />
+    <ClInclude Include="3ds\keyboard.h" />
   </ItemGroup>
 </Project>
