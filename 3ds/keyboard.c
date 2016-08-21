@@ -82,7 +82,7 @@ static u16 keyboard_bg = RGB8_to_565(204, 102, 0);
 #define KEYBOARD_HOFS 32;
 #else
 #define KEYBOARD_FULL_VOFS 90;
-#define KEYBOARD_MINI_VOFS 32;
+#define KEYBOARD_MINI_VOFS 4;
 #define KEYBOARD_HOFS 32;
 #endif
 
@@ -524,8 +524,9 @@ void keyboard_draw_region(sregion_t *region, int index, u16 c) {
 	}
 }
 
-//extern boolean	automapactive;
-//static boolean	automapactive_last = false;
+extern boolean	automapactive;
+extern boolean automapontop;
+static boolean	automapactive_last = false;
 
 void keyboard_draw()
 {
@@ -543,7 +544,7 @@ void keyboard_draw()
 	keyboard_screen = (u16*)gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, &width, &height);
 
 	//see if the keyboard layout has changed or automap toggled
-	if (keyboard_visible != keyboard_visible_last) { // || (automapactive ^ automapactive_last)) {
+	if ((keyboard_visible != keyboard_visible_last) || (automapactive ^ automapactive_last)) {
 		keyboard_vofs = KEYBOARD_FULL_VOFS;
 		keyboard_hofs = KEYBOARD_HOFS;
 		h = keyboard_visible == 1 ? 4 : 11;
@@ -552,17 +553,17 @@ void keyboard_draw()
 			keyboard_vofs = KEYBOARD_MINI_VOFS;
 		}
 		//clear the console and set window size
-		/*if (automapactive && !automapactive_last) {
+		if (automapactive && !automapactive_last) {
 			consoleClear();
 			memset(keyboard_screen, 0, 320 * 240 * 2);
-			consoleSetWindow(0, 0, h-1, 40, 1);
+			consoleSetWindow(0, 0, h-1, 40, automapontop ? 1 : 0);
 		}
 		else if (!automapactive && automapactive_last) {
 			consoleClear();
 			memset(keyboard_screen, 0, 320 * 240 * 2);
 			consoleSetWindow(0, 0, 0, 40, h);
 		}
-		else*/ {
+		else {
 			consoleClear();
 			memset(keyboard_screen, 0, 320 * 240 * 2);
 			consoleSetWindow(0, 0, 0, 40, h);
@@ -570,11 +571,16 @@ void keyboard_draw()
 
 		//printf("full refresh: %d %d\n", keyboard_visible, keyboard_visible_last);
 		keyboard_visible_last = keyboard_visible;
-		//automapactive_last = automapactive;
+		automapactive_last = automapactive;
 	}
 	else {
 		//the keyboard layout has not changed so no need to draw everything
-		return;
+		if (automapactive && !automapontop) {
+			//let it full draw on top of automap
+		}
+		else {
+			return;
+		}
 	}
 
 	region = key_array;

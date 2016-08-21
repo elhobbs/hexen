@@ -2028,7 +2028,7 @@ boolean G_CheckDemoStatus (void)
 		, endtime-starttime);
 	}
 
-	printf("G_CheckDemoStatus: %d\n", demoplayback);
+	//printf("G_CheckDemoStatus: %d\n", demoplayback);
 	
 	if (demoplayback)
 	{

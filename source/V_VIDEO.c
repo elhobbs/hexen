@@ -60,7 +60,7 @@ void V_DrawPatch(int x, int y, patch_t *patch)
 	}
 	col = 0;
 	if (in_subscreen) {
-		desttop = subscreen + y*SCREENWIDTH + x;
+		desttop = subscreen + (y+40)*SCREENWIDTH + x;
 	}
 	else {
 		desttop = screen + y*SCREENWIDTH + x;

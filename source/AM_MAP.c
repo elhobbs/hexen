@@ -18,6 +18,8 @@
 
 #define NUMALIAS 3 // Number of antialiased lines.
 
+boolean automapontop = false;
+
 int cheating = 0;
 static int grid = 0;
 
@@ -25,7 +27,8 @@ static int leveljuststarted = 1; // kluge until AM_LevelInit() is called
 
 boolean    automapactive = false;
 static int finit_width = SCREENWIDTH;
-static int finit_height = SCREENHEIGHT-SBARHEIGHT-3;
+static int finit_height = SCREENHEIGHT - SBARHEIGHT - 3;
+//static int finit_height = SCREENHEIGHT;
 static int f_x, f_y; // location of window on screen
 static int f_w, f_h; // size of window on screen
 static int lightlev; // used for funky strobing effect
@@ -199,6 +202,36 @@ void AM_findMinMaxBoundaries(void)
 
   max_scale_mtof = FixedDiv(f_h<<FRACBITS, 2*PLAYERRADIUS);
 
+}
+
+extern byte *subscreen;
+
+void AM_setDimensions() {
+	fixed_t a, b;
+
+	if (automapontop) {
+		finit_width = SCREENWIDTH;
+		finit_height = SCREENHEIGHT - SBARHEIGHT - 3;
+		fb = screen;
+	}
+	else {
+		finit_width = 320;
+		finit_height = 240 - SBARHEIGHT - 3;
+		fb = subscreen;
+	}
+	f_w = finit_width;
+	f_h = finit_height;
+	m_w = FTOM(f_w);
+	m_h = FTOM(f_h);
+
+	b = FixedDiv(f_h << FRACBITS, max_h);
+	min_scale_mtof = a < b ? a : b;
+
+	max_scale_mtof = FixedDiv(f_h << FRACBITS, 2 * PLAYERRADIUS);
+
+	scale_mtof = FixedDiv(min_scale_mtof, (int)(0.7*FRACUNIT));
+	if (scale_mtof > max_scale_mtof) scale_mtof = min_scale_mtof;
+	scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
 
 void AM_changeWindowLoc(void)
@@ -612,40 +645,59 @@ void AM_clearFB(int color)
 		mapxstart += dmapx>>1;
 		mapystart += dmapy>>1;
 
-	  	while(mapxstart >= finit_width)
-			mapxstart -= finit_width;
+	  	while(mapxstart >= 320)
+			mapxstart -= 320;
 	   while(mapxstart < 0)
-			mapxstart += finit_width;
-	   while(mapystart >= finit_height)
-			mapystart -= finit_height;
+			mapxstart += 320;
+	   while(mapystart >= 158)
+			mapystart -= 158;
 	   while(mapystart < 0)
-			mapystart += finit_height;
+			mapystart += 158;
 	}
 	else
 	{
 		mapxstart += (MTOF(m_paninc.x)>>1);
 		mapystart -= (MTOF(m_paninc.y)>>1);
-		if(mapxstart >= finit_width)
-			mapxstart -= finit_width;
+		if(mapxstart >= 320)
+			mapxstart -= 320;
 		if(mapxstart < 0)
-			mapxstart += finit_width;
-		if(mapystart >= finit_height)
-		mapystart -= finit_height;
+			mapxstart += 320;
+		if(mapystart >= 158)
+		mapystart -= 158;
 		if(mapystart < 0)
-		mapystart += finit_height;
+		mapystart += 158;
 	}
 
 	//blit the automap background to the screen.
-	j=mapystart*finit_width;
-	for(i = 0; i < SCREENHEIGHT-SBARHEIGHT; i++)
+	int src_y = mapystart;
+	j=mapystart* 320;
+	for(i = 0; i < finit_height; i++)
 	{
-		memcpy(screen+i*finit_width, maplump+j+mapxstart, 	
-			finit_width-mapxstart);
-		memcpy(screen+i*finit_width+finit_width-mapxstart, maplump+j, 
+		int dst_x = 0;
+		int src_x = mapxstart;
+		int w;
+		while (dst_x < finit_width) {
+			w = 320 - src_x;
+			if (dst_x + w > finit_width) {
+				w = finit_width - dst_x;
+			}
+			memcpy(fb + i*finit_width + dst_x, maplump + src_y*320 + src_x,w);
+			dst_x += w;
+			src_x = 0;
+		}
+		src_y++;
+		if (src_y >= 158) {
+			src_y = 0;
+		}
+		/*memcpy(screen+i*finit_width, maplump+j+mapxstart, 	
+			320-mapxstart);
+		memcpy(screen + i*finit_width + finit_width - mapxstart, maplump + j,
 			mapxstart);
-		j += finit_width;
-		if(j >= finit_height*finit_width)
-			j=0;
+		memcpy(screen + i*finit_width + 320, maplump + j,
+			finit_width-320);
+		j += 320;
+		if(j >= 158*320)
+			j=0;*/
 	}
 
 //	 memcpy(screen, maplump, finit_width*finit_height);
@@ -1239,10 +1291,19 @@ void AM_drawCrosshair(int color)
   fb[(f_w*(f_h+1))/2] = color; // single point for now
 }
 */
-
 void AM_Drawer (void)
 {
   if (!automapactive) return;
+
+  //AM_setDimensions();
+  if (automapontop) {
+	  fb = screen;
+	  f_w = finit_width;
+  }
+  else {
+	  fb = subscreen;
+	  f_w = 320;
+  }
 
   UpdateState |= I_FULLSCRN;
   AM_clearFB(BACKGROUND);

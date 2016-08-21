@@ -11,11 +11,17 @@
 u32 __stacksize__ = 1024 * 1024;
 #endif
 
-int UpdateState = 0;
 int DisplayTicker = 0;
 byte *pcscreen, *destscreen, *destview;
 extern  doomcom_t *doomcom;
 extern byte *subscreen;
+extern boolean	automapactive;
+
+int UpdateState;
+extern int screenblocks;
+extern boolean automapontop;
+
+void keyboard_draw();
 
 void keyboard_init();
 
@@ -412,14 +418,32 @@ void copy_subscreen(int side) {
 	u16* bufAdr = (u16*)gfxGetFramebuffer(GFX_BOTTOM, side, &screen_height, &screen_width);
 	byte *src = subscreen;
 	int w, h;
+	int rows_to_copy;
+	int row_start;
+
+	if (!automapactive || automapontop) {
+		rows_to_copy = 66;
+		row_start = 0;
+	}
+	else {
+		rows_to_copy = 240;
+		row_start = 0;
+	}
 
 	for (w = 0; w<320; w++)
 	{
-		for (h = 0; h<66; h++)
+		for (h = 0; h<rows_to_copy; h++)
 		{
 			u32 v = (w * screen_height + h);
-			u32 v1 = ((200 - h) * SCREENWIDTH + w);
-			bufAdr[v] = RGB8_to_565(pal3ds[src[v1] * 3 + 0],pal3ds[src[v1] * 3 + 1],pal3ds[src[v1] * 3 + 2]);
+			u32 v1 = ((240 - h) * SCREENWIDTH + w);
+			switch (src[v1]) {
+			case 0:
+				bufAdr[v] = 0;
+				break;
+			default:
+				bufAdr[v] = RGB8_to_565(pal3ds[src[v1] * 3 + 0], pal3ds[src[v1] * 3 + 1], pal3ds[src[v1] * 3 + 2]);
+				break;
+			}
 		}
 	}
 #endif
@@ -433,10 +457,6 @@ void copy_subscreen(int side) {
 ==============
 */
 
-int UpdateState;
-extern int screenblocks;
-
-void keyboard_draw();
 
 
 void I_Update(void)

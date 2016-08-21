@@ -638,6 +638,7 @@ void H2_PostEvent(event_t *ev)
 // DrawAndBlit
 //
 //==========================================================================
+extern boolean automapontop;
 
 static void DrawAndBlit(void)
 {
@@ -659,10 +660,13 @@ static void DrawAndBlit(void)
 			{
 				AM_Drawer();
 			}
-			else
-			{
+
+			if (automapactive && automapontop) {
+			}
+			else {
 				R_RenderPlayerView(&players[displayplayer]);
 			}
+
 			CT_Drawer();
 			UpdateState |= I_FULLVIEW;
 			SB_Drawer();
