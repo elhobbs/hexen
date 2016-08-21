@@ -174,3 +174,4 @@ void mus_exit();
 void mus_play_music(u8 *data);
 void mus_stop_music();
 void mus_play_timer(void);
+void mus_update_volume();

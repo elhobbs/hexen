@@ -136,7 +136,9 @@ extern byte *destview, *destscreen;	// PC direct to screen pointers
 */
 
 //#define NUMARTIFCTS	28
-#define MAXPLAYERS	8
+#define MAXPLAYERSFULL	8
+extern int maxplayers;
+#define MAXPLAYERS	maxplayers
 #define TICRATE		35			// number of tics / second
 #define TICSPERSEC	35
 
@@ -643,7 +645,7 @@ typedef struct player_s
 	int			powers[NUMPOWERS];
 	int			keys;
 	int			pieces;					// Fourth Weapon pieces
-	signed int			frags[MAXPLAYERS];		// kills of other players
+	signed int			frags[MAXPLAYERSFULL];		// kills of other players
 	weapontype_t	readyweapon;
 	weapontype_t	pendingweapon;		// wp_nochange if not changing
 	boolean		weaponowned[NUMWEAPONS];
@@ -783,8 +785,8 @@ extern boolean netgame; // only true if >1 player
 extern boolean cmdfrag; // true if a CMD_FRAG packet should be sent out every
 						// kill
 
-extern boolean playeringame[MAXPLAYERS];
-extern pclass_t PlayerClass[MAXPLAYERS];
+extern boolean playeringame[MAXPLAYERSFULL];
+extern pclass_t PlayerClass[MAXPLAYERSFULL];
 
 extern int consoleplayer; // player taking events and displaying
 
@@ -792,7 +794,7 @@ extern int displayplayer;
 
 extern int viewangleoffset;	// ANG90 = left side, ANG270 = right
 
-extern player_t players[MAXPLAYERS];
+extern player_t players[MAXPLAYERSFULL];
 
 extern	boolean		singletics;			// debug flag to cancel adaptiveness
 
@@ -813,7 +815,7 @@ extern 	int 			prevmap;
 extern	int			levelstarttic;		// gametic at level start
 extern	int			leveltime;			// tics in game play for par
 
-extern	ticcmd_t	netcmds[MAXPLAYERS][BACKUPTICS];
+extern	ticcmd_t	netcmds[MAXPLAYERSFULL][BACKUPTICS];
 extern int ticdup;
 
 //#define	MAXNETNODES		8
@@ -831,7 +833,7 @@ extern mapthing_t deathmatchstarts[MAXDEATHMATCHSTARTS];
 extern int RebornPosition;
 
 #define MAX_PLAYER_STARTS 8
-extern mapthing_t playerstarts[MAX_PLAYER_STARTS][MAXPLAYERS];
+extern mapthing_t playerstarts[MAX_PLAYER_STARTS][MAXPLAYERSFULL];
 
 extern int viewwindowx;
 extern int viewwindowy;
@@ -1282,7 +1284,7 @@ int	R_CheckTextureNumForName (char *name);
 //----
 extern	int		myargc;
 extern	char	**myargv;
-extern	int		localQuakeHappening[MAXPLAYERS];
+extern	int		localQuakeHappening[MAXPLAYERSFULL];
 
 int	M_CheckParm(char *check);
 // returns the position of the given parameter in the arg list (0 if not found)

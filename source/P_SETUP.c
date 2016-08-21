@@ -78,7 +78,7 @@ static int QualifyMap(int map);
 
 int MapCount;
 mapthing_t deathmatchstarts[MAXDEATHMATCHSTARTS], *deathmatch_p;
-mapthing_t playerstarts[MAX_PLAYER_STARTS][MAXPLAYERS];
+mapthing_t playerstarts[MAX_PLAYER_STARTS][MAXPLAYERSFULL];
 int numvertexes;
 vertex_t *vertexes;
 int numsegs;

@@ -349,7 +349,7 @@ void SV_LoadGame(int slot)
 {
 	int i;
 	char fileName[100];
-	player_t playerBackup[MAXPLAYERS];
+	player_t playerBackup[MAXPLAYERSFULL];
 	mobj_t *mobj;
 
 	// Copy all needed save files to the base slot
@@ -457,7 +457,7 @@ void SV_MapTeleport(int map, int position)
 	int i;
 	int j;
 	char fileName[100];
-	player_t playerBackup[MAXPLAYERS];
+	player_t playerBackup[MAXPLAYERSFULL];
 	mobj_t *targetPlayerMobj;
 	mobj_t *mobj;
 	int inventoryPtr;
@@ -534,6 +534,7 @@ void SV_MapTeleport(int map, int position)
 		{
 			if(players[i].playerstate == PST_DEAD)
 			{ // In a network game, force all players to be alive
+				//printf("map teleport: %d\n", i);
 				players[i].playerstate = PST_REBORN;
 			}
 			if(!deathmatch)
@@ -649,6 +650,7 @@ boolean SV_RebornSlotAvailable(void)
 	char fileName[100];
 
 	sprintf(fileName, "%shex%d.hxs", SavePath, REBORN_SLOT);
+	printf("reborn slot: %s\n", fileName);
 	return ExistingFile(fileName);
 }
 

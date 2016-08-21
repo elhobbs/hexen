@@ -46,14 +46,14 @@ a gametic cannot be run until nettics[] > gametic for all players
 
 ticcmd_t                localcmds[BACKUPTICS];
 
-ticcmd_t        netcmds[MAXPLAYERS][BACKUPTICS];
+ticcmd_t        netcmds[MAXPLAYERSFULL][BACKUPTICS];
 int             nettics[MAXNETNODES];
 boolean                 nodeingame[MAXNETNODES];        // set false as nodes leave game
 boolean                 remoteresend[MAXNETNODES];      // set when local needs tics
 int                             resendto[MAXNETNODES];                  // set when remote needs tics
 int                             resendcount[MAXNETNODES];
 
-int                             nodeforplayer[MAXPLAYERS];
+int                             nodeforplayer[MAXPLAYERSFULL];
 
 int             maketic;
 int                             lastnettic, skiptics;

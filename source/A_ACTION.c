@@ -866,7 +866,7 @@ boolean A_LocalQuake(byte *args, mobj_t *actor)
 // A_Quake
 //
 //===========================================================================
-int	localQuakeHappening[MAXPLAYERS];
+int	localQuakeHappening[MAXPLAYERSFULL];
 
 void A_Quake(mobj_t *actor)
 {

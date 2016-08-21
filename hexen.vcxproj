@@ -120,11 +120,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3ds\3ds_sound.c" />
-    <ClCompile Include="3ds\dbopl.c" />
+    <ClCompile Include="3ds\dbopl.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="3ds\main.c" />
-    <ClCompile Include="3ds\musplay.c" />
-    <ClCompile Include="3ds\opl.c" />
-    <ClCompile Include="3ds\opl_queue.c" />
+    <ClCompile Include="3ds\musplay.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="3ds\opl.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="3ds\opl_queue.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="source\AM_MAP.c" />
     <ClCompile Include="source\A_ACTION.c" />
     <ClCompile Include="source\CT_CHAT.c" />
@@ -182,10 +190,18 @@
     <ClCompile Include="source\Z_ZONE.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="3ds\dbopl.h" />
-    <ClInclude Include="3ds\musplay.h" />
-    <ClInclude Include="3ds\opl.h" />
-    <ClInclude Include="3ds\opl_queue.h" />
+    <ClInclude Include="3ds\dbopl.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="3ds\musplay.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="3ds\opl.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="3ds\opl_queue.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-x86|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="include\AM_DATA.H" />
     <ClInclude Include="include\AM_MAP.H" />
     <ClInclude Include="include\CT_CHAT.H" />

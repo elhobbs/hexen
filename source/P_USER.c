@@ -95,7 +95,8 @@ void P_Thrust(player_t *player, angle_t angle, fixed_t move)
 =
 = P_CalcHeight
 =
-=Calculate the walking / running height adjustment
+=
+Calculate the walking / running height adjustment
 =
 ==================
 */
@@ -422,6 +423,7 @@ void P_DeathThink(player_t *player)
 			newtorch = 0;
 			newtorchdelta = 0;
 		}
+		//printf("deaththink: %d\n", player-players);
 		player->playerstate = PST_REBORN;
 		player->mo->special1 = player->class;
 		if(player->mo->special1 > 2)

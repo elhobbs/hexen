@@ -169,6 +169,8 @@ int waitforit(char *str) {
 	return 0;
 }
 
+int maxplayers = 8;
+
 void H2_Main(void)
 {
 	int p;
@@ -209,6 +211,19 @@ void H2_Main(void)
 	ST_Message("Z_Init: Init zone memory allocation daemon.\n");
 	Z_Init();
 
+	// stolen from chocolate doom
+	// The Hexen Shareware, ne 4 Level Demo Version, is missing the SKY1 lump
+	// and uses the SKY2 lump instead. Let's use this fact and the missing
+	// levels from MAP05 onward to identify it and set gamemode accordingly.
+
+	if ((W_CheckNumForName("SKY1") == -1 &&
+		W_CheckNumForName("MAP05") == -1) ||
+		W_CheckNumForName("MAP41") != -1)
+	{
+		//gamemode = shareware;
+		maxplayers = 4;
+	}
+
 #ifdef __WATCOMC__
 	I_StartupKeyboard();
 	I_StartupJoystick();
@@ -222,7 +237,7 @@ void H2_Main(void)
 
 	InitMapMusicInfo();		// Init music fields in mapinfo
 
-#if defined( __WATCOMC__) || defined(_3DS)
+#if defined( __WATCOMC__) || defined(_3DS) || defined(WIN32)
 	ST_Message("S_InitScript\n");
 	S_InitScript();
 #endif
@@ -767,6 +782,7 @@ void H2_AdvanceDemo(void)
 
 void H2_DoAdvanceDemo(void)
 {
+	//printf("H2_DoAdvanceDemo\n", gameaction);
 	players[consoleplayer].playerstate = PST_LIVE; // don't reborn
 	advancedemo = false;
 	usergame = false; // can't save/end game here

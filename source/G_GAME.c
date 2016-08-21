@@ -68,9 +68,9 @@ boolean         viewactive;
 
 boolean         deathmatch;             // only if started as net death
 boolean         netgame;                // only true if packets are broadcast
-boolean         playeringame[MAXPLAYERS];
-player_t        players[MAXPLAYERS];
-pclass_t		PlayerClass[MAXPLAYERS];
+boolean         playeringame[MAXPLAYERSFULL];
+player_t        players[MAXPLAYERSFULL];
+pclass_t		PlayerClass[MAXPLAYERSFULL];
 
 // Position indicator for cooperative net-play reborn
 int RebornPosition;
@@ -88,7 +88,7 @@ boolean         singledemo;             // quit after playing a demo from cmdlin
 
 boolean         precache = true;        // if true, load all graphics at start
 
-short            consistancy[MAXPLAYERS][BACKUPTICS];
+short            consistancy[MAXPLAYERSFULL][BACKUPTICS];
 
 //
 // controls (have defaults)
@@ -1011,6 +1011,7 @@ void G_Ticker(void)
 //
 	while (gameaction != ga_nothing)
 	{
+		//printf("ga: %d\n", gameaction);
 		switch (gameaction)
 		{
 			case ga_loadlevel:
@@ -1151,6 +1152,7 @@ void G_Ticker(void)
 //
 // do main actions
 //
+	//printf("gs: %d\n", gamestate);
 	switch (gamestate)
 	{
 		case GS_LEVEL:
@@ -1266,7 +1268,7 @@ void G_PlayerExitMap(int playerNumber)
 void G_PlayerReborn(int player)
 {
 	player_t *p;
-	int frags[MAXPLAYERS];
+	int frags[MAXPLAYERSFULL];
 	int killcount, itemcount, secretcount;
 	uint worldTimer;
 
@@ -1409,6 +1411,7 @@ void G_DoReborn(int playernum)
 		}
 		else
 		{ // Start a new game if there's no reborn info
+			printf("G_DoReborn: %d\n", gameaction);
 			gameaction = ga_newgame;
 		}
 	}
@@ -1763,6 +1766,7 @@ void G_DoSaveGame(void)
 void G_DeferredNewGame(skill_t skill)
 {
 	TempSkill = skill;
+	printf("G_DeferredNewGame: %d\n", gameaction);
 	gameaction = ga_newgame;
 }
 
@@ -1832,6 +1836,7 @@ void G_InitNew(skill_t skill, int episode, int map)
 	// Force players to be initialized upon first level load
 	for(i = 0; i < MAXPLAYERS; i++)
 	{
+		//printf("force reborn: %d\n", i);
 		players[i].playerstate = PST_REBORN;
 		players[i].worldTimer = 0;
 	}
@@ -1875,6 +1880,7 @@ void G_ReadDemoTiccmd (ticcmd_t *cmd)
 {
 	if (*demo_p == DEMOMARKER)
 	{       // end of demo data stream
+		printf("hit demo marker\n");
 		G_CheckDemoStatus ();
 		return;
 	}
@@ -1953,6 +1959,7 @@ void G_DoPlayDemo (void)
 	skill_t skill;
 	int             i, episode, map;
 	
+	//printf("doplaydemo: %d %s\n", gameaction, defdemoname);
 	gameaction = ga_nothing;
 	demobuffer = demo_p = W_CacheLumpName (defdemoname, PU_STATIC);
 	skill = *demo_p++;
@@ -2021,6 +2028,8 @@ boolean G_CheckDemoStatus (void)
 		I_Error ("timed %i gametics in %i realtics",gametic
 		, endtime-starttime);
 	}
+
+	printf("G_CheckDemoStatus: %d\n", demoplayback);
 	
 	if (demoplayback)
 	{
@@ -2030,6 +2039,7 @@ boolean G_CheckDemoStatus (void)
 		Z_ChangeTag (demobuffer, PU_CACHE);
 		demoplayback = false;
 		H2_AdvanceDemo();
+		printf("demoplayback = false\n");
 		return true;
 	}
 

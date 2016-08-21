@@ -67,17 +67,17 @@ void CT_BackSpace(int player);
 int head;
 int tail;
 byte ChatQueue[QUEUESIZE];
-int chat_dest[MAXPLAYERS];
-char chat_msg[MAXPLAYERS][MESSAGESIZE];
-char plr_lastmsg[MAXPLAYERS][MESSAGESIZE+9];
-int msgptr[MAXPLAYERS];
-int msglen[MAXPLAYERS];
+int chat_dest[MAXPLAYERSFULL];
+char chat_msg[MAXPLAYERSFULL][MESSAGESIZE];
+char plr_lastmsg[MAXPLAYERSFULL][MESSAGESIZE+9];
+int msgptr[MAXPLAYERSFULL];
+int msglen[MAXPLAYERSFULL];
 
 boolean cheated;
 
 static int FontABaseLump;
 
-char *CT_FromPlrText[MAXPLAYERS] =
+char *CT_FromPlrText[MAXPLAYERSFULL] =
 {
 	"BLUE:  ",
 	"RED:  ",

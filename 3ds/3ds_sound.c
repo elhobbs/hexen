@@ -122,7 +122,7 @@ static void dsp_submit(void)
 	{
 		if (snd_completed == snd_sent)
 		{
-			printf("Sound overrun\n");
+			//printf("Sound overrun\n");
 			break;
 		}
 #ifdef _3DS
@@ -471,7 +471,7 @@ static void I_StopSong() {
 }
 void S_StartSong(int song, boolean loop)
 {
-	printf("S_StartSong: %d\n", song);
+	//printf("S_StartSong: %d\n", song);
 	char *songLump = P_GetMapSongLump(song);
 	S_StartSongName(songLump, loop);
 }
@@ -480,7 +480,7 @@ void S_StartSongName(char *songLump, boolean loop)
 	if (songLump == 0) {
 		return;
 	}
-	printf("S_StartSongName: %s\n", songLump);
+	//printf("S_StartSongName: %s\n", songLump);
 	int lumpnum = W_GetNumForName(songLump);
 	if (lumpnum <= 0 || lumpnum == mus_playing) {
 		return;
@@ -784,3 +784,18 @@ void S_UpdateSounds(mobj_t *listener)
 	//mus_stats();
 	mus_dsp_submit();
 }
+
+#ifdef _WIN32
+void mus_init() {
+}
+void mus_exit() {
+}
+void mus_play_music(u8 *data) {
+}
+void mus_stop_music() {
+}
+void mus_update_volume() {
+}
+void mus_dsp_submit(void) {
+}
+#endif

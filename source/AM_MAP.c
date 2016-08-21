@@ -1275,7 +1275,7 @@ void AM_Drawer (void)
 
 // 8-player note:  Proper player color names here, too
 
-char *PlayerColorText[MAXPLAYERS] =
+char *PlayerColorText[MAXPLAYERSFULL] =
 {
 	"BLUE:",
 	"RED:",
@@ -1290,8 +1290,8 @@ char *PlayerColorText[MAXPLAYERS] =
 void AM_DrawDeathmatchStats(void)
 {
 	int i, j, k, m;
-	int fragCount[MAXPLAYERS];
-	int order[MAXPLAYERS];
+	int fragCount[MAXPLAYERSFULL];
+	int order[MAXPLAYERSFULL];
 	char textBuffer[80];
 	int yPosition;
 

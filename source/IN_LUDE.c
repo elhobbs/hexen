@@ -72,7 +72,7 @@ static int FontABaseLump;
 static int FontBLump;
 static int FontBLumpBase;
 
-static signed int totalFrags[MAXPLAYERS];
+static signed int totalFrags[MAXPLAYERSFULL];
 
 static int HubCount;
 static char *HubText;
