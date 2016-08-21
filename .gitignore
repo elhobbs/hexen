@@ -1,0 +1,11 @@
+.vs/*
+Debug-x86/*
+build/*
+*.3dsx
+hexen.VC.VC.opendb
+hexen.VC.db
+*.elf
+*.smdh
+hexen.vcxproj.user
+output/*
+readme.txt
