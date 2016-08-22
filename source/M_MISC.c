@@ -528,7 +528,7 @@ default_t defaults[] =
 	//{ "key_lookcenter", &key_lookcenter, SC_END, 1 },
 	{ "key_invleft", &key_invleft, '[', 1 },
 	{ "key_invright", &key_invright, ']', 1 },
-	//{ "key_useartifact", &key_useartifact, SC_ENTER, 1 },
+	{ "key_useartifact", &key_useartifact, KEY_ENTER, 1 },
 
 	{ "key_fire", &key_fire, KEY_RCTRL, 1 },
 	{ "key_use", &key_use, ' ', 1 },

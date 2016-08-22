@@ -56,7 +56,7 @@ void V_DrawPatch(int x, int y, patch_t *patch)
 	if(x < 0 || x+SHORT(patch->width) > SCREENWIDTH || y < 0
 		|| y+SHORT(patch->height) > SCREENHEIGHT)
 	{
-		I_Error("Bad V_DrawPatch");
+		I_Error("Bad V_DrawPatch %d %d %d %d", x, y, patch->width, patch->height);
 	}
 	col = 0;
 	if (in_subscreen) {
@@ -111,8 +111,14 @@ void V_DrawFuzzPatch (int x, int y, patch_t *patch)
 		I_Error ("Bad V_DrawPatch");
 
 	col = 0;
-	desttop = screen+y*SCREENWIDTH+x;
-	
+	//desttop = screen+y*SCREENWIDTH+x;
+	if (in_subscreen) {
+		desttop = subscreen + (y + 40)*SCREENWIDTH + x;
+	}
+	else {
+		desttop = screen + y*SCREENWIDTH + x;
+	}
+
 	w = SHORT(patch->width);
 	for ( ; col<w ; x++, col++, desttop++)
 	{
@@ -165,8 +171,14 @@ void V_DrawAltFuzzPatch (int x, int y, patch_t *patch)
 	}
 
 	col = 0;
-	desttop = screen+y*SCREENWIDTH+x;
-	
+	//desttop = screen+y*SCREENWIDTH+x;
+	if (in_subscreen) {
+		desttop = subscreen + (y + 40)*SCREENWIDTH + x;
+	}
+	else {
+		desttop = screen + y*SCREENWIDTH + x;
+	}
+
 	w = SHORT(patch->width);
 	for ( ; col<w ; x++, col++, desttop++)
 	{
@@ -216,9 +228,17 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
 		I_Error ("Bad V_DrawPatch");
 
 	col = 0;
-	desttop = screen+y*SCREENWIDTH+x;
-	desttop2 = screen+(y+2)*SCREENWIDTH+x+2;
-	
+	//desttop = screen+y*SCREENWIDTH+x;
+	//desttop2 = screen+(y+2)*SCREENWIDTH+x+2;
+	if (in_subscreen) {
+		desttop = subscreen + (y + 40)*SCREENWIDTH + x;
+		desttop2 = subscreen + (y + 42)*SCREENWIDTH + x + 2;
+	}
+	else {
+		desttop = screen + y*SCREENWIDTH + x;
+		desttop2 = screen + (y+2)*SCREENWIDTH + x + 2;
+	}
+
 	w = SHORT(patch->width);
 	for ( ; col<w ; x++, col++, desttop++, desttop2++)
 	{

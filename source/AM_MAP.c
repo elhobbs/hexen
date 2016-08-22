@@ -27,7 +27,7 @@ static int leveljuststarted = 1; // kluge until AM_LevelInit() is called
 
 boolean    automapactive = false;
 static int finit_width = SCREENWIDTH;
-static int finit_height = SCREENHEIGHT - SBARHEIGHT - 3;
+static int finit_height = SCREENHEIGHT - SBARHEIGHT;
 //static int finit_height = SCREENHEIGHT;
 static int f_x, f_y; // location of window on screen
 static int f_w, f_h; // size of window on screen
@@ -382,6 +382,9 @@ void AM_Stop (void)
 
 //  AM_unloadPics();
   automapactive = false;
+  if (!automapontop) {
+	  memset(subscreen + 400 * (240 - 66), 0, 400 * 66);
+  }
 //  ST_Responder(&st_notify);
   stopped = true;
 	BorderNeedRefresh = true;
@@ -1298,11 +1301,11 @@ void AM_Drawer (void)
   //AM_setDimensions();
   if (automapontop) {
 	  fb = screen;
-	  f_w = finit_width;
+	  //f_w = finit_width;
   }
   else {
 	  fb = subscreen;
-	  f_w = 320;
+	  //f_w = 320;
   }
 
   UpdateState |= I_FULLSCRN;

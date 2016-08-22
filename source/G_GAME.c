@@ -2038,7 +2038,7 @@ boolean G_CheckDemoStatus (void)
 		Z_ChangeTag (demobuffer, PU_CACHE);
 		demoplayback = false;
 		H2_AdvanceDemo();
-		printf("demoplayback = false\n");
+		//printf("demoplayback = false\n");
 		return true;
 	}
 

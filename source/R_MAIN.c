@@ -582,8 +582,9 @@ void R_ExecuteSetViewSize (void)
 	}
 	else
 	{
-		scaledviewwidth = setblocks*32;
-		viewheight = (setblocks*161/10);
+		scaledviewwidth = setblocks*40;
+		//viewheight = (setblocks * 161 / 10);
+		viewheight = (setblocks * 201 / 10);
 	}
 
 	detailshift = setdetail;
@@ -790,7 +791,7 @@ void R_SetupFrame(player_t *player)
 	validcount++;
 	if(BorderNeedRefresh)
 	{
-		if(setblocks < 10)
+		if(setblocks < 11)
 		{
 			R_DrawViewBorder();
 		}

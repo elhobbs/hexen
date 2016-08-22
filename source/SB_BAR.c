@@ -17,6 +17,7 @@
 #include "soundst.h"
 
 boolean in_subscreen = false;
+extern byte* subscreen;
 
 #ifdef __WATCOMC__
 #include "i_sound.h" // For CD stuff
@@ -1079,6 +1080,9 @@ static void DrawAnimatedIcons(void)
 {
 	int frame;
 	static boolean hitCenterFrame;
+	boolean in_subscreen_old = in_subscreen;
+
+	in_subscreen = false;
 
 	// Wings of wrath
 	if(CPlayer->powers[pw_flight])
@@ -1162,6 +1166,7 @@ static void DrawAnimatedIcons(void)
 		BorderTopRefresh = true;
 		UpdateState |= I_MESSAGES;
 	}
+	in_subscreen = in_subscreen_old;
 }
 
 //==========================================================================
@@ -1278,6 +1283,7 @@ void DrawMainBar(void)
 {
 	int i;
 	int temp;
+	byte *dest;
 	patch_t *manaPatch1, *manaPatch2;
 	patch_t *manaVialPatch1, *manaVialPatch2;
 
@@ -1437,18 +1443,24 @@ void DrawMainBar(void)
 		V_DrawPatch(77, 164, manaPatch1);
 		V_DrawPatch(110, 164, manaPatch2);
 		V_DrawPatch(94, 164, manaVialPatch1);
+		if (in_subscreen) {
+			dest = subscreen + 40*SCREENWIDTH;
+		}
+		else {
+			dest = screen;
+		}
 		for(i = 165; i < 187-(22*CPlayer->mana[0])/MAX_MANA; i++)
 		{
-			screen[i*SCREENWIDTH+95] = 0;
-			screen[i*SCREENWIDTH+96] = 0;
-			screen[i*SCREENWIDTH+97] = 0;
+			dest[i*SCREENWIDTH+95] = 0;
+			dest[i*SCREENWIDTH+96] = 0;
+			dest[i*SCREENWIDTH+97] = 0;
 		}
 		V_DrawPatch(102, 164, manaVialPatch2);
 		for(i = 165; i < 187-(22*CPlayer->mana[1])/MAX_MANA; i++)
 		{
-			screen[i*SCREENWIDTH+103] = 0;
-			screen[i*SCREENWIDTH+104] = 0;
-			screen[i*SCREENWIDTH+105] = 0;
+			dest[i*SCREENWIDTH+103] = 0;
+			dest[i*SCREENWIDTH+104] = 0;
+			dest[i*SCREENWIDTH+105] = 0;
 		}
 		oldweapon = CPlayer->readyweapon;
 		UpdateState |= I_STATBAR;

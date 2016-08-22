@@ -466,13 +466,16 @@ void R_DrawViewBorder (void)
 	byte	*src, *dest;
 	int		x,y;
 	
-	if (scaledviewwidth == SCREENWIDTH)
+	//if (scaledviewwidth == SCREENWIDTH)
+	//	return;
+	if (viewheight == SCREENHEIGHT) {
 		return;
+	}
 
 	src = W_CacheLumpName("F_022", PU_CACHE);
 	dest = screen;
 	
-	for (y=0 ; y<SCREENHEIGHT-SBARHEIGHT ; y++)
+	for (y=0 ; y<SCREENHEIGHT ; y++)
 	{
 		for (x=0 ; x<SCREENWIDTH/64 ; x++)
 		{
@@ -485,26 +488,27 @@ void R_DrawViewBorder (void)
 			dest += (SCREENWIDTH&63);
 		}
 	}
-	for(x=viewwindowx; x < viewwindowx+viewwidth; x += 16)
-	{
-		V_DrawPatch(x, viewwindowy-4, W_CacheLumpName("bordt", PU_CACHE));
-		V_DrawPatch(x, viewwindowy+viewheight, W_CacheLumpName("bordb", 
-			PU_CACHE));
+	if (viewwidth < (SCREENWIDTH - 8) && viewheight < (SCREENHEIGHT - 8)) {
+		for(x=viewwindowx; x < viewwindowx+viewwidth; x += 16)
+		{
+			V_DrawPatch(x, viewwindowy-4, W_CacheLumpName("bordt", PU_CACHE));
+			V_DrawPatch(x, viewwindowy+viewheight, W_CacheLumpName("bordb", 
+				PU_CACHE));
+		}
+		for (y = viewwindowy; y < viewwindowy + viewheight; y += 16)
+		{
+			V_DrawPatch(viewwindowx - 4, y, W_CacheLumpName("bordl", PU_CACHE));
+			V_DrawPatch(viewwindowx + viewwidth, y, W_CacheLumpName("bordr", PU_CACHE));
+		}
+		V_DrawPatch(viewwindowx - 4, viewwindowy - 4, 
+			W_CacheLumpName("bordtl", PU_CACHE));
+		V_DrawPatch(viewwindowx + viewwidth, viewwindowy - 4,
+			W_CacheLumpName("bordtr", PU_CACHE));
+		V_DrawPatch(viewwindowx + viewwidth, viewwindowy + viewheight,
+			W_CacheLumpName("bordbr", PU_CACHE));
+		V_DrawPatch(viewwindowx - 4, viewwindowy + viewheight,
+			W_CacheLumpName("bordbl", PU_CACHE));
 	}
-	for(y=viewwindowy; y < viewwindowy+viewheight; y += 16)
-	{
-		V_DrawPatch(viewwindowx-4, y, W_CacheLumpName("bordl", PU_CACHE));
-		V_DrawPatch(viewwindowx+viewwidth, y, W_CacheLumpName("bordr", 
-			PU_CACHE));
-	}
-	V_DrawPatch(viewwindowx-4, viewwindowy-4, W_CacheLumpName("bordtl", 
-		PU_CACHE));
-	V_DrawPatch(viewwindowx+viewwidth, viewwindowy-4, 
-		W_CacheLumpName("bordtr", PU_CACHE));
-	V_DrawPatch(viewwindowx+viewwidth, viewwindowy+viewheight, 
-		W_CacheLumpName("bordbr", PU_CACHE));
-	V_DrawPatch(viewwindowx-4, viewwindowy+viewheight, 
-		W_CacheLumpName("bordbl", PU_CACHE));
 }
 
 /*

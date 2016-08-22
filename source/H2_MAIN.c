@@ -237,7 +237,7 @@ void H2_Main(void)
 
 	InitMapMusicInfo();		// Init music fields in mapinfo
 
-#if defined( __WATCOMC__) || defined(_3DS) || defined(WIN32)
+#if defined( __WATCOMC__) || defined(_3DS) || defined(_WIN32)
 	ST_Message("S_InitScript\n");
 	S_InitScript();
 #endif
