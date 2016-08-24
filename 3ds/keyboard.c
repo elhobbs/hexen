@@ -3,8 +3,12 @@
 #include "H2DEF.H"
 #include "keyboard.h"
 
+extern boolean	automapactive;
+extern boolean automapontop;
+static boolean	automapactive_last = false;
+
 typedef struct {
-	int x, y, type, dx, key;
+	int x, y, type, dx, dy, key;
 	char *text, *shift_text;
 } sregion_t;
 
@@ -17,9 +21,26 @@ int	keyboard_visible = 1; //0=hidden,1=fullsize,2=mini - numbers only
 
 static char key_buttons[] = "1234567890";
 
+#define	KEY_AUX1			207
+#define	KEY_AUX2			208
+#define	KEY_AUX3			209
+#define	KEY_AUX4			210
+#define	KEY_AUX5			211
+#define	KEY_AUX6			212
+#define	KEY_AUX7			213
+#define	KEY_AUX8			214
+
 static sregion_t key_button_array[] = {
-	{ 32, 0, 0, 0, 0, key_buttons, key_buttons },
-	{ 270, 0, 6, 0, 0x200, 0 },
+	{ 32, 0, 0, 0, 0, 0, key_buttons, key_buttons },
+	{ 270, 0, 6, 0, 0, 0x200, 0 },
+	{ -30, 32 * 1, 7, 0, 0, KEY_AUX1, KEY_AUX1 },
+	{ -30, 32 * 2, 7, 0, 0, KEY_AUX2, KEY_AUX2 },
+	{ -30, 32 * 3, 7, 0, 0, KEY_AUX3, KEY_AUX3 },
+	{ -30, 32 * 4, 7, 0, 0, KEY_AUX4, KEY_AUX4 },
+	{ 254, 32 * 1, 7, 0, 0, KEY_AUX5, KEY_AUX5 },
+	{ 254, 32 * 2, 7, 0, 0, KEY_AUX6, KEY_AUX6 },
+	{ 254, 32 * 3, 7, 0, 0, KEY_AUX7, KEY_AUX7 },
+	{ 254, 32 * 4, 7, 0, 0, KEY_AUX8, KEY_AUX8 },
 };
 
 static char key_row_1[] = "~1234567890-=";
@@ -50,31 +71,34 @@ static char key_return[] = "Rtrn";
 #define KEY_RSHIFT     (0x80+0x36)
 
 static sregion_t key_array[] = {
-	{ 0, 0 * 16, 0, 0, 0, key_row_1, key_row_1_shift },
-	{ 13 * 16 + 2, 0 * 16, 1, 0, KEY_BACKSPACE, key_backspace },
-	{ 0, 1 * 16, 1, 0, KEY_TAB, key_tab },
-	{ 4 * 8, 1 * 16, 0, 0, 0, key_row_2, key_row_2_shift },
-	{ 0, 2 * 16, 1, 0, KEY_CAPSLOCK, key_caps },
-	{ 5 * 8, 2 * 16, 0, 0, 0, key_row_3, key_row_3_shift },
+	{ 0, 0 * 16, 0, 0, 0, 0, key_row_1, key_row_1_shift },
+	{ 13 * 16 + 2, 0 * 16, 1, 0, 0, KEY_BACKSPACE, key_backspace },
+	{ 0, 1 * 16, 1, 0, 0, KEY_TAB, key_tab },
+	{ 4 * 8, 1 * 16, 0, 0, 0, 0, key_row_2, key_row_2_shift },
+	{ 0, 2 * 16, 1, 0, 0, KEY_CAPSLOCK, key_caps },
+	{ 5 * 8, 2 * 16, 0, 0, 0, 0, key_row_3, key_row_3_shift },
 	{ 5 * 8 +
 	11 * 16 +
-	2, 2 * 16, 1, 0, KEY_ENTER, key_return },
-	{ 0, 3 * 16, 1, 0, KEY_RSHIFT, key_shift },
-	{ 6 * 8, 3 * 16, 0, 0, 0, key_row_4, key_row_4_shift },
-	{ 256 - 16 * 2, 3 * 16, 2, 0, KEY_UPARROW, 0 },
-	{ 0, 4 * 16, 1, 0, KEY_RCTRL, key_ctrl },
-	{ 5 * 8, 4 * 16, 1, 0, KEY_RALT, key_alt },
-	{ 9 * 8, 4 * 16, 1, 0, ' ', key_space },
-	{ 256 - 16 * 3, 4 * 16, 3, 0, KEY_LEFTARROW, 0 },
-	{ 256 - 16 * 2, 4 * 16, 4, 0, KEY_DOWNARROW, 0 },
-	{ 256 - 16 * 1, 4 * 16, 5, 0, KEY_RIGHTARROW, 0 },
-	{ 270, 4 * 16, 6, 0, 0x200, 0 },
+	2, 2 * 16, 1, 0, 0, KEY_ENTER, key_return },
+	{ 0, 3 * 16, 1, 0, 0, KEY_RSHIFT, key_shift },
+	{ 6 * 8, 3 * 16, 0, 0, 0, 0, key_row_4, key_row_4_shift },
+	{ 256 - 16 * 2, 3 * 16, 2, 0, 0, KEY_UPARROW, 0 },
+	{ 0, 4 * 16, 1, 0, 0, KEY_RCTRL, key_ctrl },
+	{ 5 * 8, 4 * 16, 1, 0, 0, KEY_RALT, key_alt },
+	{ 9 * 8, 4 * 16, 1, 0, 0, ' ', key_space },
+	{ 256 - 16 * 3, 4 * 16, 3, 0, 0, KEY_LEFTARROW, 0 },
+	{ 256 - 16 * 2, 4 * 16, 4, 0, 0, KEY_DOWNARROW, 0 },
+	{ 256 - 16 * 1, 4 * 16, 5, 0, 0, KEY_RIGHTARROW, 0 },
+	{ 270, 4 * 16, 6, 0, 0, 0x200, 0 },
 };
 
 #define RGB8_to_565(r,g,b)  (((b)>>3)&0x1f)|((((g)>>2)&0x3f)<<5)|((((r)>>3)&0x1f)<<11)
 
 static u16 keyboard_fg = RGB8_to_565(192, 192, 192);
 static u16 keyboard_bg = RGB8_to_565(204, 102, 0);
+
+static u16 keyboard_fg_sub = 0;
+static u16 keyboard_bg_sub = 13 * 16;
 
 #if 0
 #define KEYBOARD_FULL_VOFS 160;
@@ -132,18 +156,47 @@ void keyboard_init()
 		case 0:
 			len = strlen(key_array[i].text) * 16;
 			key_array[i].dx = len;
+			key_array[i].dy = 16;
 			break;
 		case 1:
 			len = strlen(key_array[i].text) * 8 + 4;
 			key_array[i].dx = len;
+			key_array[i].dy = 16;
 			break;
+		case 7:
+			key_array[i].dx = 32;
+			key_array[i].dy = 32;
 		default:
 			key_array[i].dx = 16;
+			key_array[i].dy = 16;
 		}
 	}
-	key_button_array[0].dx = strlen(key_button_array[0].text) * 16;
-	key_button_array[1].dx = 16;
-	
+	count = sizeof(key_button_array) / sizeof(*key_button_array);
+
+	for (i = 0; i<count; i++)
+	{
+		switch (key_button_array[i].type) {
+		case 0:
+			len = strlen(key_button_array[i].text) * 16;
+			key_button_array[i].dx = len;
+			key_button_array[i].dy = 16;
+			break;
+		case 1:
+			len = strlen(key_button_array[i].text) * 8 + 4;
+			key_button_array[i].dx = len;
+			key_button_array[i].dy = 16;
+			break;
+		case 7:
+			key_button_array[i].dx = 32;
+			key_button_array[i].dy = 32;
+			break;
+	default:
+			key_button_array[i].dx = 16;
+			key_button_array[i].dy = 16;
+			break;
+		}
+	}
+
 	keyboard_vofs = KEYBOARD_FULL_VOFS;
 	keyboard_hofs = KEYBOARD_HOFS;
 	if (keyboard_visible == 2) {
@@ -188,8 +241,14 @@ void keyboard_mark(sregion_t *region, int index, int in_touch) {
 		}
 	}
 	//draw regions here to avoid layout change issues
-	keyboard_draw_region(last_touching, last_index, keyboard_fg);
-	keyboard_draw_region(key_touching, key_touching_index, keyboard_bg);
+	if (automapactive && !automapontop) {
+		keyboard_draw_region_sub(last_touching, last_index, keyboard_fg_sub);
+		keyboard_draw_region_sub(key_touching, key_touching_index, keyboard_bg_sub);
+	}
+	else {
+		keyboard_draw_region(last_touching, last_index, keyboard_fg);
+		keyboard_draw_region(key_touching, key_touching_index, keyboard_bg);
+	}
 }
 
 int keyboard_scankeys()
@@ -226,11 +285,11 @@ int keyboard_scankeys()
 		touchRead(&touch);
 		x = touch.px - keyboard_hofs;
 		y = touch.py - keyboard_vofs;
-		if (y < 0)
-		{
-			keyboard_mark(0, -1, 1);
-			return key_down;
-		}
+		//if (y < 0)
+		//{
+		//	keyboard_mark(0, -1, 1);
+		//	return key_down;
+		//}
 		//printf("Touch: %d %d\n",x,y);
 	}
 	else
@@ -244,17 +303,17 @@ int keyboard_scankeys()
 	if (keyboard_visible == 2)
 	{
 		region = key_button_array;
-		count = 2;
+		count = sizeof(key_button_array)/sizeof(*key_button_array);
 	}
 
 	for (i = 0; i<count; i++)
 	{
-		if (y < region[i].y || y >(region[i].y + 16))
+		if (y < region[i].y || y >(region[i].y + region[i].dy))
 		{
 			continue;
 		}
 		len = region[i].dx;
-		if (x < region[i].x || x >(region[i].x + len))
+		if (x < region[i].x || x >(region[i].x + region[i].dx))
 		{
 			continue;
 		}
@@ -333,6 +392,237 @@ static u16 *keyboard_screen;
 const u8 default_font_bin[256*64];
 static u16 keyboard_screen[400*240];
 #endif
+
+
+//============================
+
+extern byte *subscreen;
+
+void keyboard_draw_char_sub(int x, int y, int c, u16 fg) {
+	if (c < 0 || c > 256) return;
+
+	u8 *fontdata = default_font_bin + (8 * c);
+	u16 bg = 0;
+
+
+	//if (currentConsole->flags & CONSOLE_UNDERLINE) b8 = 0xff;
+
+	//if (currentConsole->flags & CONSOLE_CROSSED_OUT) b4 = 0xff;
+
+	int i;
+	//u8 *pscreen = &subscreen[(x * 240) + (239 - (y + 7))];
+	u8 *pscreen = &subscreen[(y * 400) + x];
+	u8 b1 = *(fontdata++);
+
+	for (i = 0; i<8; i++) {
+		if (b1 & 128) { pscreen[0] = fg; }
+		//else { *(pscreen++) = bg; }
+		if (b1 & 64) { pscreen[1] = fg; }
+		//else { *(pscreen++) = bg; }
+		if (b1 & 32) { pscreen[2] = fg; }
+		//else { *(pscreen++) = bg; }
+		if (b1 & 16) { pscreen[3] = fg; }
+		//else { *(pscreen++) = bg; }
+		if (b1 & 8) { pscreen[4] = fg; }
+		//else { *(pscreen++) = bg; }
+		if (b1 & 4) { pscreen[5] = fg; }
+		//else { *(pscreen++) = bg; }
+		if (b1 & 2) { pscreen[6] = fg; }
+		//else { *(pscreen++) = bg; }
+		if (b1 & 1) { pscreen[7] = fg; }
+		//else { *(pscreen++) = bg; }
+		b1 = *(fontdata++);
+		pscreen += 400;
+	}
+
+}
+
+void vline_sub(int x, int y, int len, u16 color) {
+	int i;
+	u8 *pscreen = &subscreen[(y * 400) + x];
+	for (i = 0; i < len; i++) {
+		*pscreen = color;
+		pscreen += 400;
+	}
+}
+
+void hline_sub(int x, int y, int len, u16 color) {
+	int i;
+	u8 *pscreen = &subscreen[(y * 400) + x];
+	for (i = 0; i < len; i++) {
+		*pscreen++ = color;
+	}
+}
+
+void keyboard_draw_region_sub(sregion_t *region, int index, u16 cc) {
+	int len;
+	char *ch;
+	u8 *pscreen;
+	int j, k, pos;
+	int x, y;
+	u16 c = cc;
+
+	if (region == 0) {
+		return;
+	}
+
+	//bail if the keyboard is set to redraw
+	if (keyboard_visible != keyboard_visible_last) {
+		return;
+	}
+
+	x = keyboard_hofs + region->x;
+	y = keyboard_vofs + region->y;
+	//pscreen = &subscreen[(x * 240) + (239 - (y + 1 + 12))];
+	pscreen = &subscreen[((y + 1 + 12) * 400) + x];
+
+	if (region->type == 0)
+	{
+		ch = key_in_shift ? region->shift_text : region->text;
+		pos = 0;
+		while (ch && *ch)
+		{
+			if (region == key_touching && key_touching_index == pos) {
+				c = keyboard_bg_sub;
+			}
+			else {
+				c = cc;
+			}
+			if (index == -1 || index == pos) {
+				//left/right sides
+				vline_sub(x, y + 1, 14, c);
+				vline_sub(x + 14, y + 1, 14, c);
+				//top/bottom
+				hline_sub(x + 1, y + 1, 14, c);
+				hline_sub(x + 1, y + 14, 14, c);
+
+				k = key_in_caps ? toupper(*ch) : *ch;
+				keyboard_draw_char_sub(x + 3, y + 4, k, c);
+			}
+			ch++;
+			x += 16;
+			pos++;
+		}
+	}
+	else if (region->type == 1)
+	{
+		if (region == key_touching) {
+			c = keyboard_bg_sub;
+		}
+		else if ((region->key == KEY_CAPSLOCK && key_in_caps) || (region->key == KEY_RSHIFT && key_in_shift)) {
+			c = 11*16;
+		}
+		else if ((region->key == KEY_CAPSLOCK && !key_in_caps) || (region->key == KEY_RSHIFT && !key_in_shift)) {
+			c = cc;
+		}
+		else {
+			c = cc;
+		}
+		ch = region->text;
+		len = strlen(ch) * 8 + 4;
+
+		//left/right sides
+		vline_sub(x, y + 1, 14, c);
+		vline_sub(x + len, y + 1, 14, c);
+		//top/bottom
+		hline_sub(x + 1, y + 1, len, c);
+		hline_sub(x + 1, y + 14, len, c);
+
+		while (ch && *ch)
+		{
+			keyboard_draw_char_sub(x + 3, y + 4, *ch, c);
+			ch++;
+			x += 8;
+		}
+	}
+	else if (region->type == 2)
+	{
+		if (region == key_touching) {
+			c = keyboard_bg_sub;
+		}
+		for (j = 0; j<12; j++)
+		{
+			for (k = 0; k<12; k++)
+			{
+				if (key_arrow[11-j][11-k])
+					pscreen[k] = c;
+			}
+			pscreen -= 400;
+		}
+	}
+	else if (region->type == 3)
+	{
+		if (region == key_touching) {
+			c = keyboard_bg_sub;
+		}
+		for (j = 0; j<12; j++)
+		{
+			for (k = 0; k<12; k++)
+			{
+				if (key_arrow[k][j])
+					pscreen[k] = c;
+			}
+			pscreen -= 400;
+		}
+	}
+	else if (region->type == 4)
+	{
+		if (region == key_touching) {
+			c = keyboard_bg_sub;
+		}
+		for (j = 0; j<12; j++)
+		{
+			for (k = 0; k<12; k++)
+			{
+				if (key_arrow[j][11-k])
+					pscreen[k] = c;
+			}
+			pscreen -= 400;
+		}
+	}
+	else if (region->type == 5)
+	{
+		if (region == key_touching) {
+			c = keyboard_bg_sub;
+		}
+		for (j = 0; j<12; j++)
+		{
+			for (k = 0; k<12; k++)
+			{
+				if (key_arrow[11 - k][j])
+					pscreen[k] = c;
+			}
+			pscreen -= 400;
+		}
+	}
+	else if (region->type == 6)
+	{
+		if (region == key_touching) {
+			c = keyboard_bg_sub;
+		}
+		//left/right sides
+		vline_sub(x, y + 1, 14, c);
+		vline_sub(x + 14, y + 1, 14, c);
+		//top/bottom
+		hline_sub(x + 1, y + 1, 14, c);
+		hline_sub(x + 1, y + 14, 14, c);
+	}
+	else if (region->type == 7)
+	{
+		if (region == key_touching) {
+			c = keyboard_bg_sub;
+		}
+		//left/right sides
+		vline_sub(x, y + 1, 30, c);
+		vline_sub(x + 30, y + 1, 30, c);
+		//top/bottom
+		hline_sub(x + 1, y + 1, 30, c);
+		hline_sub(x + 1, y + 30, 30, c);
+	}
+}
+
+
+//============================
 
 void keyboard_draw_char(int x, int y, int c, u16 fg) {
 	if (c < 0 || c > 256) return;
@@ -522,11 +812,16 @@ void keyboard_draw_region(sregion_t *region, int index, u16 c) {
 		hline(x + 1, y + 1, 14, c);
 		hline(x + 1, y + 14, 14, c);
 	}
+	else if (region->type == 7)
+	{
+		//left/right sides
+		vline(x, y + 1, 30, c);
+		vline(x + 30, y + 1, 30, c);
+		//top/bottom
+		hline(x + 1, y + 1, 30, c);
+		hline(x + 1, y + 30, 30, c);
+	}
 }
-
-extern boolean	automapactive;
-extern boolean automapontop;
-static boolean	automapactive_last = false;
 
 void keyboard_draw()
 {
@@ -588,14 +883,19 @@ void keyboard_draw()
 	if (keyboard_visible == 2)
 	{
 		region = key_button_array;
-		count = 2;
+		count = sizeof(key_button_array) / sizeof(*key_button_array);
 	}
 
 
 
 	for (i = 0; i<count; i++)
 	{
-		keyboard_draw_region(&region[i], -1, keyboard_fg);
+		if (automapactive && !automapontop) {
+			keyboard_draw_region_sub(&region[i], -1, keyboard_fg_sub);
+		}
+		else {
+			keyboard_draw_region(&region[i], -1, keyboard_fg);
+		}
 	}
 #endif
 }

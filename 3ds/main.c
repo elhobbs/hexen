@@ -551,8 +551,8 @@ void I_Update(void)
 
 #ifdef _3DS
 	copy_screen(GFX_LEFT);
-	copy_subscreen(GFX_LEFT);
 	keyboard_draw();
+	copy_subscreen(GFX_LEFT);
 	gfxFlushBuffers();
 	gfxSwapBuffers();
 #endif
