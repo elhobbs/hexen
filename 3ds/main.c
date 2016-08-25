@@ -24,6 +24,13 @@ extern boolean automapontop;
 void keyboard_draw();
 
 void keyboard_init();
+void _3ds_shutdown() {
+#ifdef _3DS
+	//gpuExit();
+	printf("shutting down...maybe...\n");
+	gfxExit();
+#endif
+}
 
 int main(int argc, char**argv)
 {
@@ -37,7 +44,7 @@ int main(int argc, char**argv)
 
 	printf("gfx init complete\n");
 
-	atexit(I_Quit);
+	atexit(_3ds_shutdown);
 
 	//gfxSet3D(true); // uncomment if using stereoscopic 3D
 
@@ -45,10 +52,7 @@ int main(int argc, char**argv)
 	myargv = argv;
 	H2_Main();
 
-#ifdef _3DS
-	gfxExit();
-#endif
-
+	exit(0);
 	return 0;
 }
 
@@ -164,8 +168,13 @@ void I_Init(void)
 ===============
 */
 
+void mus_exit();
+void mix_exit();
 void S_ShutDown(void)
 {
+	mus_exit();
+	mix_exit();
+	printf("sound shutdown complete\n");
 #if 0
 	extern int tsm_ID;
 	if (tsm_ID != -1)
@@ -243,10 +252,7 @@ void I_Quit(void)
 	I_Shutdown();
 
 	printf("\nHexen: Beyond Heretic\n");
-#ifdef _3DS
-	gfxExit();
-#endif
-	exit(0);
+	exit(1);
 }
 
 /*
@@ -603,6 +609,9 @@ void keyboard_input();
 
 void DS_Controls(void) {
 	touchPosition touch;
+	circlePosition nubPos = { 0, 0 };
+	circlePosition cstickPos = { 0, 0 };
+	int dx, dy;
 
 	scanKeys();	// Do DS input housekeeping
 	u32 keys = keysDown();
@@ -641,7 +650,6 @@ void DS_Controls(void) {
 
 	if (keysHeld() & KEY_TOUCH) // this is only for x axis
 	{
-		int dx, dy;
 		event_t event;
 
 		touchRead(&g_currentTouch);// = touchReadXY();
@@ -655,13 +663,49 @@ void DS_Controls(void) {
 		event.type = ev_mouse;
 		//event.data1 = I_SDLtoDoomMouseState(Event->motion.state);
 		event.data1 = 0;
-		event.data2 = dx << 5;// ((touch.px - 128) / 3) << 5;
-							  //event.data3 = (-(touch.py - 96) / 8) << 5;
-		event.data3 = 0;// dy << 4;// (0) << 5;
+		event.data2 = (dx << 3) * (mouseSensitivity + 5) / 10;
+		event.data3 = (dy >> 1) * (mouseSensitivity + 5) / 10;
 		H2_PostEvent(&event);
 
 		g_lastTouch.px = (g_lastTouch.px + g_currentTouch.px) / 2;
 		g_lastTouch.py = (g_lastTouch.py + g_currentTouch.py) / 2;
+	}
+	irrstCstickRead(&nubPos);
+	if (abs(nubPos.dx) > 20 || abs(nubPos.dy) > 20) {
+		event_t ev;
+		dx = 0;
+		dy = 0;
+		if (abs(nubPos.dx) > 20) {
+			dx = (nubPos.dx) * (nubSensitivity + 5) / 10;
+		}
+		if (abs(nubPos.dy) > 20) {
+			dy = -(nubPos.dy) * (nubSensitivity + 5) / 10;
+}
+
+		ev.type = ev_nub;
+		ev.data1 = 0;
+		ev.data2 = dx;
+		ev.data3 = dy;
+		H2_PostEvent(&ev);
+	}
+
+	circleRead(&cstickPos);
+	if (abs(cstickPos.dx) > 20 || abs(cstickPos.dy) > 20) {
+		event_t ev;
+		dx = 0;
+		dy = 0;
+		if (abs(cstickPos.dx) > 20) {
+			dx = (cstickPos.dx >> 2) * (cstickSensitivity + 5) / 10;
+		}
+		if (abs(cstickPos.dy) > 20) {
+			dy = (cstickPos.dy >> 2) * (cstickSensitivity + 5) / 10;
+		}
+
+		ev.type = ev_cstick;
+		ev.data1 = 0;
+		ev.data2 = dx;
+		ev.data3 = dy;
+		H2_PostEvent(&ev);
 	}
 }
 #else

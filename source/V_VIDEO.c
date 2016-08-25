@@ -56,7 +56,8 @@ void V_DrawPatch(int x, int y, patch_t *patch)
 	if(x < 0 || x+SHORT(patch->width) > SCREENWIDTH || y < 0
 		|| y+SHORT(patch->height) > SCREENHEIGHT)
 	{
-		I_Error("Bad V_DrawPatch %d %d %d %d", x, y, patch->width, patch->height);
+		//I_Error("Bad V_DrawPatch %d %d %d %d", x, y, patch->width, patch->height);
+		return;
 	}
 	col = 0;
 	if (in_subscreen) {

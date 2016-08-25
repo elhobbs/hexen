@@ -435,6 +435,8 @@ extern boolean messageson;
 extern  int     viewwidth, viewheight;
 
 int mouseSensitivity;
+int cstickSensitivity;
+int nubSensitivity;
 
 extern  int screenblocks;
 
@@ -468,7 +470,6 @@ default_t defaults[] =
 	{ "music_volume", &snd_MusicVolume, 10},
 #endif
 
-#ifdef __WATCOMC__
 #define SC_UPARROW              0x48
 #define SC_DOWNARROW            0x50
 #define SC_LEFTARROW            0x4b
@@ -487,6 +488,7 @@ default_t defaults[] =
 #define SC_END					0x4f
 #define SC_ENTER				0x1c
 #define SC_SLASH				0X35
+#ifdef __WATCOMC__
 
 	{ "key_right", &key_right, SC_RIGHTARROW, 1 },
 	{ "key_left", &key_left, SC_LEFTARROW, 1 },
@@ -520,20 +522,20 @@ default_t defaults[] =
 	{ "key_strafeleft", &key_strafeleft, ',', 1 },
 	{ "key_straferight", &key_straferight, '.', 1 },
 	{ "key_jump", &key_jump, 'x', 1 },
-	//{ "key_flyup", &key_flyup, SC_PAGEUP, 1 },
-	//{ "key_flydown", &key_flydown, SC_INSERT, 1 },
-	//{ "key_flycenter", &key_flycenter, SC_HOME, 1 },
-	//{ "key_lookup", &key_lookup, SC_PAGEDOWN, 1 },
-	//{ "key_lookdown", &key_lookdown, SC_DELETE, 1 },
-	//{ "key_lookcenter", &key_lookcenter, SC_END, 1 },
+	{ "key_flyup", &key_flyup, SC_PAGEUP, 1 },
+	{ "key_flydown", &key_flydown, SC_INSERT, 1 },
+	{ "key_flycenter", &key_flycenter, SC_HOME, 1 },
+	{ "key_lookup", &key_lookup, SC_PAGEDOWN, 1 },
+	{ "key_lookdown", &key_lookdown, SC_DELETE, 1 },
+	{ "key_lookcenter", &key_lookcenter, SC_END, 1 },
 	{ "key_invleft", &key_invleft, '[', 1 },
 	{ "key_invright", &key_invright, ']', 1 },
 	{ "key_useartifact", &key_useartifact, KEY_ENTER, 1 },
 
 	{ "key_fire", &key_fire, KEY_RCTRL, 1 },
 	{ "key_use", &key_use, ' ', 1 },
-	//{ "key_strafe", &key_strafe, SC_RALT, 1 },
-	//{ "key_speed", &key_speed, SC_RSHIFT, 1 },
+	{ "key_strafe", &key_strafe, SC_RALT, 1 },
+	{ "key_speed", &key_speed, SC_RSHIFT, 1 },
 #endif
 
 #ifdef __NeXT__
@@ -606,7 +608,10 @@ default_t defaults[] =
 	{ "chatmacro6", (int *) &chat_macros[6], (int) HUSTR_CHATMACRO6 },
 	{ "chatmacro7", (int *) &chat_macros[7], (int) HUSTR_CHATMACRO7 },
 	{ "chatmacro8", (int *) &chat_macros[8], (int) HUSTR_CHATMACRO8 },
-	{ "chatmacro9", (int *) &chat_macros[9], (int) HUSTR_CHATMACRO9 }
+	{ "chatmacro9", (int *) &chat_macros[9], (int) HUSTR_CHATMACRO9 },
+	
+	{ "cstick_sensitivity", &cstickSensitivity, 5 },
+	{ "nub_sensitivity", &nubSensitivity, 5 },
 };
 
 int numdefaults;

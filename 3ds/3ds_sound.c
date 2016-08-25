@@ -94,6 +94,10 @@ static void dsp_shutdown() {
 	snd_init = false;
 }
 
+void mix_exit() {
+	dsp_shutdown();
+}
+
 static int dsp_dmapos(void)
 {
 	int		s;

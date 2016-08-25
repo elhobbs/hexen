@@ -49,6 +49,8 @@ typedef enum
 	MENU_FILES,
 	MENU_LOAD,
 	MENU_SAVE,
+	MENU_CONFIG,
+	MENU_CALIBRATE,
 	MENU_NONE
 } MenuType_t;
 
@@ -84,6 +86,8 @@ static void SCQuitGame(int option);
 static void SCClass(int option);
 static void SCSkill(int option);
 static void SCMouseSensi(int option);
+static void SCCStickSensi(int option);
+static void SCNubSensi(int option);
 static void SCSfxVolume(int option);
 static void SCMusicVolume(int option);
 static void SCScreenSize(int option);
@@ -127,6 +131,7 @@ boolean mn_SuicideConsole;
 static int FontABaseLump;
 static int FontAYellowBaseLump;
 static int FontBBaseLump;
+static int FontBEndLump;
 static int MauloBaseLump;
 static Menu_t *CurrentMenu;
 static int CurrentItPos;
@@ -251,12 +256,40 @@ static Menu_t SkillMenu =
 	MENU_CLASS
 };
 
+static MenuItem_t CalibrateItems[] =
+{
+	{ ITT_LRFUNC, "TOUCH", SCMouseSensi, 0, MENU_NONE },
+	{ ITT_EMPTY, NULL, NULL, 0, MENU_NONE },
+	{ ITT_LRFUNC, "CSTICK", SCCStickSensi, 0, MENU_NONE },
+	{ ITT_EMPTY, NULL, NULL, 0, MENU_NONE },
+	{ ITT_LRFUNC, "NUB", SCNubSensi, 0, MENU_NONE },
+	{ ITT_EMPTY, NULL, NULL, 0, MENU_NONE },
+};
+
+static void DrawCalibrateMenu(void);
+
+static Menu_t CalibrateMenu =
+{
+	88, 30,
+	DrawCalibrateMenu,
+	6, CalibrateItems,
+	0,
+	MENU_OPTIONS
+};
+
+static void DrawCalibrateMenu(void)
+{
+	DrawSlider(&CalibrateMenu, 1, 10, mouseSensitivity);
+	DrawSlider(&CalibrateMenu, 3, 10, cstickSensitivity);
+	DrawSlider(&CalibrateMenu, 5, 10, nubSensitivity);
+}
+
 static MenuItem_t OptionsItems[] =
 {
 	{ ITT_EFUNC, "END GAME", SCEndGame, 0, MENU_NONE },
 	{ ITT_EFUNC, "MESSAGES : ", SCMessages, 0, MENU_NONE },
-	{ ITT_LRFUNC, "MOUSE SENSITIVITY", SCMouseSensi, 0, MENU_NONE },
-	{ ITT_EMPTY, NULL, NULL, 0, MENU_NONE },
+	{ ITT_SETMENU, "CALIBRATE", NULL, 0, MENU_CALIBRATE },
+	{ ITT_SETMENU, "CONTROLS", NULL, 0, MENU_CONFIG },
 	{ ITT_SETMENU, "MORE...", NULL, 0, MENU_OPTIONS2 }
 };
 
@@ -288,6 +321,192 @@ static Menu_t Options2Menu =
 	MENU_OPTIONS
 };
 
+#if 1
+
+//yeah I know...
+typedef struct
+{
+	char    *name;
+	int     *location;
+	int     defaultvalue;
+	int     scantranslate;      // PC scan code hack
+	int     untranslated;       // lousy hack
+} default_t;
+
+extern default_t defaults[];
+
+#define CONFIG_START 3
+#define CONFIG_END 23
+#define CONFIG_COUNT (CONFIG_END-CONFIG_START)
+
+static int config_offset = 0;
+static int ConfigMenuStealKeys = 0;
+static int *ConfigKey = 0;
+
+
+static boolean SCDoNothing(int option) {
+	if (option == 5) {
+		config_offset += 5;
+		if (config_offset >= CONFIG_COUNT) {
+			config_offset = 0;
+		}
+	}
+	else {
+		if (config_offset + CONFIG_START + option <= CONFIG_END) {
+			ConfigMenuStealKeys = true;
+			ConfigKey = defaults[config_offset + CONFIG_START + option].location;
+		}
+	}
+	return true;
+}
+
+static MenuItem_t ConfigItems[] =
+{
+	{ ITT_EFUNC, NULL, SCDoNothing, 0, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoNothing, 1, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoNothing, 2, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoNothing, 3, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoNothing, 4, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoNothing, 5, MENU_NONE }
+};
+
+typedef struct {
+	char	*name;
+	int		keynum;
+} keyname_t;
+
+// keys that can be set without a special name
+static const char unnamedkeys[] = "!\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz";
+
+#define KEY_TAB	9
+#define KEY_SPACE ' '
+#define	KEY_AUX1			207
+#define	KEY_AUX2			208
+#define	KEY_AUX3			209
+#define	KEY_AUX4			210
+#define	KEY_AUX5			211
+#define	KEY_AUX6			212
+#define	KEY_AUX7			213
+#define	KEY_AUX8			214
+
+// names not in this list can be lowercase ascii
+keyname_t keynames[] =
+{
+	{ "TAB",		KEY_TAB },
+	{ "ENTER",		KEY_ENTER },
+	{ "ESCAPE",		KEY_ESCAPE },
+	{ "SPACE",		KEY_SPACE },
+	{ "BKSP",		KEY_BACKSPACE },
+	{ "UP",			KEY_UPARROW },
+	{ "DOWN",		KEY_DOWNARROW },
+	{ "LEFT",		KEY_LEFTARROW },
+	{ "RIGHT",		KEY_RIGHTARROW },
+	{ "(",			'[' },
+	{ ")",			']' },
+
+	{ "CTRL",		KEY_RCTRL },
+	{ "SHIFT",		KEY_RSHIFT },
+
+	{ "AUX1",		KEY_AUX1 },
+	{ "AUX2",		KEY_AUX2 },
+	{ "AUX3",		KEY_AUX3 },
+	{ "AUX4",		KEY_AUX4 },
+	{ "AUX5",		KEY_AUX5 },
+	{ "AUX6",		KEY_AUX6 },
+	{ "AUX7",		KEY_AUX7 },
+	{ "AUX8",		KEY_AUX8 },
+};
+
+char *key_name(int key) {
+	static char nm[6];
+	int i;
+	int num = sizeof(unnamedkeys);
+	for (i = 0; i < num; i++) {
+		if (unnamedkeys[i] == key || toupper(unnamedkeys[i]) == key) {
+			nm[0] = unnamedkeys[i];
+			nm[1] = 0;
+			return nm;
+		}
+	}
+	num = sizeof(keynames) / sizeof(*keynames);
+	for (i = 0; i < num; i++) {
+		if (keynames[i].keynum == key) {
+			return keynames[i].name;
+		}
+	}
+	nm[0] = 'U';
+	nm[1] = 'n';
+	nm[2] = 'k';
+	nm[3] = 0;
+
+	return nm;
+}
+
+static void DrawConfigMenu(void) {
+	int i;
+	int x;
+	int y;
+	Menu_t *menu = CurrentMenu;
+	char *name;
+
+	x = menu->x;
+	y = menu->y;
+	for (i = 0; i < 5; i++)
+	{
+		if (config_offset + CONFIG_START + i > CONFIG_END) {
+			break;
+		}
+		MN_DrTextB(defaults[config_offset + CONFIG_START + i].name + 4, x + 5, y);
+		if (ConfigMenuStealKeys && defaults[config_offset + CONFIG_START + i].location == ConfigKey) {
+			name = "PRESS A KEY";
+			MN_DrTextB(name, x + 5 + 200 - MN_TextBWidth(name), y);
+		}
+		else {
+			name = key_name(*defaults[config_offset + CONFIG_START + i].location);
+			MN_DrTextA(name, x + 5 + 200 - MN_TextAWidth(name), y + 5);
+		}
+		y += ITEM_HEIGHT;
+	}
+	MN_DrTextA("MORE...", x + 5, y + 5);
+}
+
+static void clear_keys(int key) {
+	int i;
+	for (i = 0; i < CONFIG_COUNT; i++) {
+		if (defaults[CONFIG_START + i].location && *defaults[CONFIG_START + i].location == key) {
+			*defaults[CONFIG_START + i].location = 0;
+		}
+	}
+}
+
+int CM_Responder(int key) {
+	if (key == KEY_ESCAPE || key == KEY_ENTER) {
+		ConfigMenuStealKeys = false;
+		return true;
+	}
+
+	if (ConfigKey) {
+		clear_keys(key);
+		*ConfigKey = key;
+		ConfigKey = 0;
+		ConfigMenuStealKeys = false;
+	}
+
+	return true;
+}
+
+
+static Menu_t OptionsConfig =
+{
+	90, 20,
+	DrawConfigMenu,
+	6, ConfigItems,
+	0,
+	MENU_OPTIONS
+};
+
+#endif
+
 static Menu_t *Menus[] =
 {
 	&MainMenu,
@@ -297,7 +516,9 @@ static Menu_t *Menus[] =
 	&Options2Menu,
 	&FilesMenu,
 	&LoadMenu,
-	&SaveMenu
+	&SaveMenu,
+	&OptionsConfig,
+	&CalibrateMenu
 };
 
 #if defined( __WATCOMC__) || defined(_3DS) || defined(_WIN32)
@@ -338,6 +559,7 @@ static void InitFonts(void)
 	FontABaseLump = W_GetNumForName("FONTA_S")+1;
 	FontAYellowBaseLump = W_GetNumForName("FONTAY_S")+1;
 	FontBBaseLump = W_GetNumForName("FONTB_S")+1;
+	FontBEndLump = W_GetNumForName("FONTB_E");
 }
 
 //---------------------------------------------------------------------------
@@ -437,17 +659,21 @@ void MN_DrTextB(char *text, int x, int y)
 	char c;
 	patch_t *p;
 
-	while((c = *text++) != 0)
+	while ((c = *text++) != 0)
 	{
-		if(c < 33)
+		if (c >= 'a' && c <= 'z') {
+			c = 'A' + c - 'a';
+		}
+		if (c < 33 || (FontBBaseLump + c - 33) >= FontBEndLump)
 		{
 			x += 8;
 		}
 		else
 		{
-			p = W_CacheLumpNum(FontBBaseLump+c-33, PU_CACHE);
+			p = W_CacheLumpNum(FontBBaseLump + c - 33, PU_CACHE);
+			//ir_draw_patch_num(x, y, FontBBaseLump + c - 33, PU_CACHE);
 			V_DrawPatch(x, y, p);
-			x += p->width-1;
+			x += p->width - 1;
 		}
 	}
 }
@@ -467,16 +693,19 @@ int MN_TextBWidth(char *text)
 	patch_t *p;
 
 	width = 0;
-	while((c = *text++) != 0)
+	while ((c = *text++) != 0)
 	{
-		if(c < 33)
+		if (c >= 'a' && c <= 'z') {
+			c = 'A' + c - 'a';
+		}
+		if (c < 33 || (FontBBaseLump + c - 33) >= FontBEndLump)
 		{
-			width += 5;
+			width += 8;
 		}
 		else
 		{
-			p = W_CacheLumpNum(FontBBaseLump+c-33, PU_CACHE);
-			width += p->width-1;
+			p = W_CacheLumpNum(FontBBaseLump + c - 33, PU_CACHE);
+			width += p->width - 1;
 		}
 	}
 	return(width);
@@ -783,7 +1012,6 @@ static void DrawOptionsMenu(void)
 	{
 		MN_DrTextB("OFF", 196, 50);
 	}
-	DrawSlider(&OptionsMenu, 3, 10, mouseSensitivity);
 }
 
 //---------------------------------------------------------------------------
@@ -1049,6 +1277,36 @@ static void SCMouseSensi(int option)
 	}
 }
 
+static void SCCStickSensi(int option)
+{
+	if (option == RIGHT_DIR)
+	{
+		if (cstickSensitivity < 9)
+		{
+			cstickSensitivity++;
+		}
+	}
+	else if (cstickSensitivity)
+	{
+		cstickSensitivity--;
+	}
+}
+
+static void SCNubSensi(int option)
+{
+	if (option == RIGHT_DIR)
+	{
+		if (nubSensitivity < 9)
+		{
+			nubSensitivity++;
+		}
+	}
+	else if (nubSensitivity)
+	{
+		nubSensitivity--;
+	}
+}
+
 //---------------------------------------------------------------------------
 //
 // PROC SCSfxVolume
@@ -1298,6 +1556,7 @@ boolean MN_Responder(event_t *event)
 				{
 					MenuActive = true;
 					FileMenuKeySteal = false;
+					ConfigMenuStealKeys = false;
 					MenuTime = 0;
 					CurrentMenu = &SaveMenu;
 					CurrentItPos = CurrentMenu->oldItPos;
@@ -1314,6 +1573,7 @@ boolean MN_Responder(event_t *event)
 				{
 					MenuActive = true;
 					FileMenuKeySteal = false;
+					ConfigMenuStealKeys = false;
 					MenuTime = 0;
 					CurrentMenu = &LoadMenu;
 					CurrentItPos = CurrentMenu->oldItPos;
@@ -1328,6 +1588,7 @@ boolean MN_Responder(event_t *event)
 			case KEY_F4: // volume
 				MenuActive = true;
 				FileMenuKeySteal = false;
+				ConfigMenuStealKeys = false;
 				MenuTime = 0;
 				CurrentMenu = &Options2Menu;
 				CurrentItPos = CurrentMenu->oldItPos;
@@ -1350,6 +1611,7 @@ boolean MN_Responder(event_t *event)
 					{
 						MenuActive = true;
 						FileMenuKeySteal = false;
+						ConfigMenuStealKeys = false;
 						MenuTime = 0;
 						CurrentMenu = &SaveMenu;
 						CurrentItPos = CurrentMenu->oldItPos;
@@ -1395,6 +1657,7 @@ boolean MN_Responder(event_t *event)
 					{
 						MenuActive = true;
 						FileMenuKeySteal = false;
+						ConfigMenuStealKeys = false;
 						MenuTime = 0;
 						CurrentMenu = &LoadMenu;
 						CurrentItPos = CurrentMenu->oldItPos;
@@ -1467,6 +1730,9 @@ boolean MN_Responder(event_t *event)
 			return(true);
 		}
 		return(false);
+	}
+	if (ConfigMenuStealKeys) {
+		return CM_Responder(key);
 	}
 	if(!FileMenuKeySteal)
 	{
@@ -1659,6 +1925,7 @@ void MN_ActivateMenu(void)
 	}
 	MenuActive = true;
 	FileMenuKeySteal = false;
+	ConfigMenuStealKeys = false;
 	MenuTime = 0;
 	CurrentMenu = &MainMenu;
 	CurrentItPos = CurrentMenu->oldItPos;

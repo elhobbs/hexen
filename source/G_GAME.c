@@ -146,6 +146,8 @@ boolean         mousearray[4];
 boolean         *mousebuttons = &mousearray[1];
 	// allow [-1]
 int             mousex, mousey;             // mouse values are used once
+int				cstickx, csticky;
+int				nubx, nuby;
 int             dclicktime, dclickstate, dclicks;
 int             dclicktime2, dclickstate2, dclicks2;
 
@@ -715,10 +717,21 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	else
 	{
 		cmd->angleturn -= mousex*0x8;
-	}	
-	forward += mousey;
+	}
+
+	side += cstickx;
+	forward += csticky;
+
+	cmd->angleturn -= nubx * 0x8;
+	if (nuby) {
+		look -= (nuby > 0 ? 1 : -1);
+	}
+
+	//forward += mousey;
 	mousex = mousey = 0;
-	
+	cstickx = csticky = 0;
+	nubx = nuby = 0;
+
 	if (forward > MaxPlayerMove[pClass])
 	{
 		forward = MaxPlayerMove[pClass];
@@ -831,6 +844,8 @@ void G_DoLoadLevel (void)
 	memset (gamekeydown, 0, sizeof(gamekeydown));
 	joyxmove = joyymove = 0;
 	mousex = mousey = 0;
+	cstickx = csticky = 0;
+	nubx = nuby = 0;
 	sendpause = sendsave = paused = false;
 	memset (mousebuttons, 0, sizeof(mousebuttons));
 	memset (joybuttons, 0, sizeof(joybuttons));
@@ -981,6 +996,15 @@ boolean G_Responder(event_t *ev)
 			joyymove = ev->data3;
 			return(true); // eat events
 
+		case ev_cstick:
+			cstickx = ev->data2;
+			csticky = ev->data3;
+			return true;
+
+		case ev_nub:
+			nubx = ev->data2;
+			nuby = ev->data3;
+			return true;
 		default:
 			break;
 	}
