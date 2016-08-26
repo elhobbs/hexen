@@ -639,24 +639,41 @@ void H2_PostEvent(event_t *ev)
 //
 //==========================================================================
 extern boolean automapontop;
+extern boolean MenuActive;
+static volatile float* slider = (float*)0x1FF81080;
+extern int screen_side;
+void S_Update();
 
 static void DrawAndBlit(void)
 {
-	// Change the view size if needed
-	if(setsizeneeded)
-	{
-		R_ExecuteSetViewSize();
+	int i;
+
+	if (*slider == 0.0f) {
+		screen_side = 1;
+	}
+	else {
+		screen_side = 2;
+		if (MenuActive) {
+			screen_side = 3;
+		}
 	}
 
-	// Do buffered drawing
-	switch(gamestate)
-	{
+	for (i = 0; i < 2; i++) {
+		// Change the view size if needed
+		if (setsizeneeded)
+		{
+			R_ExecuteSetViewSize();
+		}
+
+		// Do buffered drawing
+		switch (gamestate)
+		{
 		case GS_LEVEL:
-			if(!gametic)
+			if (!gametic)
 			{
 				break;
 			}
-			if(automapactive)
+			if (automapactive)
 			{
 				AM_Drawer();
 			}
@@ -672,41 +689,60 @@ static void DrawAndBlit(void)
 			SB_Drawer();
 			break;
 		case GS_INTERMISSION:
+			screen_side = 3;
 			IN_Drawer();
 			break;
 		case GS_FINALE:
+			screen_side = 3;
 			F_Drawer();
 			break;
 		case GS_DEMOSCREEN:
+			screen_side = 3;
 			PageDrawer();
 			break;
+		}
+
+		if (paused && !MenuActive && !askforquit)
+		{
+			if (!netgame)
+			{
+				V_DrawPatch(160, viewwindowy + 5, W_CacheLumpName("PAUSED",
+					PU_CACHE));
+			}
+			else
+			{
+				V_DrawPatch(160, 70, W_CacheLumpName("PAUSED",
+					PU_CACHE));
+			}
+		}
+
+		// Draw current message
+		DrawMessage();
+
+		// Draw Menu
+		MN_Drawer();
+
+		// Send out any new accumulation
+		if ((screen_side & 1) != 0) {
+			NetUpdate();
+		}
+
+		// Flush buffered stuff to screen
+		I_Update();
+
+		//3d off
+		if ((screen_side & 1) != 0) {
+			break;
+		}
+
+		//draw left side and finish
+		screen_side = 1;
+
+		//extra sound update
+		S_Update();
 	}
 
-	if(paused && !MenuActive && !askforquit)
-	{
-		if(!netgame)
-		{
-			V_DrawPatch(160, viewwindowy+5, W_CacheLumpName("PAUSED",
-				PU_CACHE));
-		}
-		else
-		{
-			V_DrawPatch(160, 70, W_CacheLumpName("PAUSED",
-				PU_CACHE));
-		}
-	}
-
-	// Draw current message
-	DrawMessage();
-
-	// Draw Menu
-	MN_Drawer();
-
-	// Send out any new accumulation
-	NetUpdate();
-
-	// Flush buffered stuff to screen
-	I_Update();
+	screen_side = 3;
 }
 
 //==========================================================================

@@ -833,9 +833,41 @@ frame++;
 ==============
 */
 
+#define ANG5 (ANG90/18)
+static volatile float* slider = (float*)0x1FF81080;
+extern int screen_side;
+extern boolean	automapactive;
+extern boolean MenuActive;
+
 void R_RenderPlayerView (player_t *player)
 {
+	float slideamt = 0.0f - *slider;
+	int sep = (slideamt*5.0f);
+	angle_t ang = (slideamt*ANG5);
+	fixed_t vsin, vcos;
+	boolean run_netupdate = false;
+
 	R_SetupFrame (player);
+
+	if (*slider > 0.0f && !MenuActive) {
+		if (screen_side  == 1) {
+			ang = -ang;
+			sep = -sep;
+			run_netupdate = true;
+		}
+
+		vsin = finesine[(viewangle - ANG90) >> ANGLETOFINESHIFT];
+		vcos = finecosine[(viewangle - ANG90) >> ANGLETOFINESHIFT];
+
+		//viewangle += ang;
+		viewx -= sep * vcos;
+		viewy -= sep * vsin;
+		viewangleoffset = -sep;
+	}
+	else {
+		run_netupdate = true;
+	}
+
 	R_ClearClipSegs ();
 	R_ClearDrawSegs ();
 	R_ClearPlanes ();
@@ -854,9 +886,15 @@ void R_RenderPlayerView (player_t *player)
 		R_RenderBSPNode (numnodes-1);	// head node is the last node output
 	}
 
-	NetUpdate ();					// check for new console commands
+	if (run_netupdate) {
+		NetUpdate();					// check for new console commands
+	}
 	R_DrawPlanes ();
-	NetUpdate ();					// check for new console commands
+	if (run_netupdate) {
+		NetUpdate();					// check for new console commands
+	}
 	R_DrawMasked ();
-	NetUpdate ();					// check for new console commands
+	if (run_netupdate) {
+		NetUpdate();					// check for new console commands
+	}
 }

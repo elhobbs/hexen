@@ -12,7 +12,7 @@ u32 __stacksize__ = 1024 * 1024;
 #endif
 
 int DisplayTicker = 0;
-byte *pcscreen, *destscreen, *destview;
+//byte *pcscreen, *destscreen, *destview;
 extern  doomcom_t *doomcom;
 extern byte *subscreen;
 extern boolean	automapactive;
@@ -27,6 +27,7 @@ void keyboard_init();
 void _3ds_shutdown() {
 #ifdef _3DS
 	//gpuExit();
+	gfxSet3D(false);
 	printf("shutting down...maybe...\n");
 	gfxExit();
 #endif
@@ -46,7 +47,7 @@ int main(int argc, char**argv)
 
 	atexit(_3ds_shutdown);
 
-	//gfxSet3D(true); // uncomment if using stereoscopic 3D
+	gfxSet3D(true); // uncomment if using stereoscopic 3D
 
 	myargc = argc;
 	myargv = argv;
@@ -81,7 +82,7 @@ void I_WaitVBL(int vbls)
 
 void I_InitGraphics(void)
 {
-	pcscreen = destscreen = (byte *)malloc(400*240*4);
+	//pcscreen = destscreen = (byte *)malloc(400*240*4);
 	I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
 }
 
@@ -265,7 +266,7 @@ void I_Quit(void)
 
 byte *I_ZoneBase(int *size)
 {
-	int heap = 16*1024*1024;
+	int heap = 24*1024*1024;
 	byte *ptr = malloc(heap);;
 
 	*size = heap;
@@ -333,6 +334,47 @@ byte        scantokey[128] =
 */
 void   I_StartTic(void)
 {
+	touchPosition touch;
+	circlePosition nubPos = { 0, 0 };
+	circlePosition cstickPos = { 0, 0 };
+	int dx, dy;
+	irrstCstickRead(&nubPos);
+	if (abs(nubPos.dx) > 20 || abs(nubPos.dy) > 20) {
+		event_t ev;
+		dx = 0;
+		dy = 0;
+		if (abs(nubPos.dx) > 20) {
+			dx = (nubPos.dx) * (nubSensitivity + 5) / 10;
+		}
+		if (abs(nubPos.dy) > 20) {
+			dy = -(nubPos.dy) * (nubSensitivity + 5) / 10;
+		}
+
+		ev.type = ev_nub;
+		ev.data1 = 0;
+		ev.data2 = dx;
+		ev.data3 = dy;
+		H2_PostEvent(&ev);
+	}
+
+	circleRead(&cstickPos);
+	if (abs(cstickPos.dx) > 20 || abs(cstickPos.dy) > 20) {
+		event_t ev;
+		dx = 0;
+		dy = 0;
+		if (abs(cstickPos.dx) > 20) {
+			dx = (cstickPos.dx >> 2) * (cstickSensitivity + 5) / 10;
+		}
+		if (abs(cstickPos.dy) > 20) {
+			dy = (cstickPos.dy >> 2) * (cstickSensitivity + 5) / 10;
+		}
+
+		ev.type = ev_cstick;
+		ev.data1 = 0;
+		ev.data2 = dx;
+		ev.data3 = dy;
+		H2_PostEvent(&ev);
+	}
 #if 0
 	int             k;
 	event_t ev;
@@ -409,7 +451,7 @@ void copy_screen(int side) {
 		for (h = 0; h<SCREENHEIGHT; h++)
 		{
 			u32 v = (w * screen_height + h) * 3;
-			u32 v1 = ((SCREENHEIGHT - h) * SCREENWIDTH + w);
+			u32 v1 = ((SCREENHEIGHT - h - 1) * SCREENWIDTH + w);
 			bufAdr[v] = pal3ds[src[v1] * 3 + 2];
 			bufAdr[v + 1] = pal3ds[src[v1] * 3 + 1];
 			bufAdr[v + 2] = pal3ds[src[v1] * 3 + 0];
@@ -441,7 +483,7 @@ void copy_subscreen(int side) {
 		for (h = 0; h<rows_to_copy; h++)
 		{
 			u32 v = (w * screen_height + h);
-			u32 v1 = ((240 - h) * SCREENWIDTH + w);
+			u32 v1 = ((240 - h - 1) * SCREENWIDTH + w);
 			switch (src[v1]) {
 			case 0:
 				bufAdr[v] = 0;
@@ -463,7 +505,7 @@ void copy_subscreen(int side) {
 ==============
 */
 
-
+int screen_side = 3; // 1 = left, 2 = right, 3 == both
 
 void I_Update(void)
 {
@@ -512,6 +554,7 @@ void I_Update(void)
 	{
 		return;
 	}
+#if 0
 	if (UpdateState&I_FULLSCRN)
 	{
 		memcpy(pcscreen, screen, SCREENWIDTH*SCREENHEIGHT);
@@ -551,16 +594,21 @@ void I_Update(void)
 		memcpy(pcscreen, screen, SCREENWIDTH * 28);
 		UpdateState &= ~I_MESSAGES;
 	}
-
+#endif
 
 	//  memcpy(pcscreen, screen, SCREENHEIGHT*SCREENWIDTH);
 
 #ifdef _3DS
-	copy_screen(GFX_LEFT);
-	keyboard_draw();
-	copy_subscreen(GFX_LEFT);
-	gfxFlushBuffers();
-	gfxSwapBuffers();
+	if ((screen_side & 2) != 0) {
+		copy_screen(GFX_RIGHT);
+	}
+	if ((screen_side & 1) != 0) {
+		copy_screen(GFX_LEFT);
+		keyboard_draw();
+		copy_subscreen(GFX_LEFT);
+		gfxFlushBuffers();
+		gfxSwapBuffers();
+	}
 #endif
 }
 
@@ -608,9 +656,6 @@ int keys3ds[32][3] = {
 void keyboard_input();
 
 void DS_Controls(void) {
-	touchPosition touch;
-	circlePosition nubPos = { 0, 0 };
-	circlePosition cstickPos = { 0, 0 };
 	int dx, dy;
 
 	scanKeys();	// Do DS input housekeeping
@@ -620,9 +665,6 @@ void DS_Controls(void) {
 	int i;
 	boolean altmode = 0;// menuactive && !setup_select;
 
-	if (held & KEY_TOUCH) {
-		touchRead(&touch);
-	}
 
 	for (i = 0; i<16; i++) {
 		//send key down
@@ -669,43 +711,6 @@ void DS_Controls(void) {
 
 		g_lastTouch.px = (g_lastTouch.px + g_currentTouch.px) / 2;
 		g_lastTouch.py = (g_lastTouch.py + g_currentTouch.py) / 2;
-	}
-	irrstCstickRead(&nubPos);
-	if (abs(nubPos.dx) > 20 || abs(nubPos.dy) > 20) {
-		event_t ev;
-		dx = 0;
-		dy = 0;
-		if (abs(nubPos.dx) > 20) {
-			dx = (nubPos.dx) * (nubSensitivity + 5) / 10;
-		}
-		if (abs(nubPos.dy) > 20) {
-			dy = -(nubPos.dy) * (nubSensitivity + 5) / 10;
-}
-
-		ev.type = ev_nub;
-		ev.data1 = 0;
-		ev.data2 = dx;
-		ev.data3 = dy;
-		H2_PostEvent(&ev);
-	}
-
-	circleRead(&cstickPos);
-	if (abs(cstickPos.dx) > 20 || abs(cstickPos.dy) > 20) {
-		event_t ev;
-		dx = 0;
-		dy = 0;
-		if (abs(cstickPos.dx) > 20) {
-			dx = (cstickPos.dx >> 2) * (cstickSensitivity + 5) / 10;
-		}
-		if (abs(cstickPos.dy) > 20) {
-			dy = (cstickPos.dy >> 2) * (cstickSensitivity + 5) / 10;
-		}
-
-		ev.type = ev_cstick;
-		ev.data1 = 0;
-		ev.data2 = dx;
-		ev.data3 = dy;
-		H2_PostEvent(&ev);
 	}
 }
 #else

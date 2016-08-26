@@ -997,13 +997,13 @@ boolean G_Responder(event_t *ev)
 			return(true); // eat events
 
 		case ev_cstick:
-			cstickx = ev->data2;
-			csticky = ev->data3;
+			cstickx += ev->data2;
+			csticky += ev->data3;
 			return true;
 
 		case ev_nub:
-			nubx = ev->data2;
-			nuby = ev->data3;
+			nubx += ev->data2;
+			nuby += ev->data3;
 			return true;
 		default:
 			break;
