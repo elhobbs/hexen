@@ -516,6 +516,7 @@ void S_Init(void)
 	if (snd_firsttime) {
 		dsp_init();
 		S_InitScaletable();
+		S_SetSfxVolume();
 		mus_init();
 		snd_firsttime = false;
 	}
@@ -527,6 +528,14 @@ void S_GetChannelInfo(SoundInfo_t *s)
 void S_SetMusicVolume(void)
 {
 	mus_update_volume();
+}
+
+void S_SetSfxVolume(void)
+{
+	float vol = (float)snd_MaxVolume / 15.0f;
+	gMix[0] = vol;
+	gMix[1] = vol;
+	ndspChnSetMix(0, gMix);
 }
 
 static void GetSoundtime(void)
@@ -669,8 +678,8 @@ static void I_UpdateChannels() {
 			if (ch->mo->x == players[displayplayer].mo->x &&
 				ch->mo->y == players[displayplayer].mo->y)
 				sep = NORM_SEP;
-			ch->left = ((255 - sep) * vol) / 127;
-			ch->right = ((sep)* vol) / 127;
+			ch->left = ((255 - sep) * ch->volume) / 127;
+			ch->right = ((sep)* ch->volume) / 127;
 		}
 	}
 }

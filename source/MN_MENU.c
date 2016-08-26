@@ -1406,6 +1406,7 @@ static void SCNubSensi(int option)
 // PROC SCSfxVolume
 //
 //---------------------------------------------------------------------------
+void S_SetSfxVolume(void);
 
 static void SCSfxVolume(int option)
 {
@@ -1421,6 +1422,7 @@ static void SCSfxVolume(int option)
 		snd_MaxVolume--;
 	}
 	soundchanged = true; // we'll set it when we leave the menu
+	S_SetSfxVolume();
 }
 
 //---------------------------------------------------------------------------
