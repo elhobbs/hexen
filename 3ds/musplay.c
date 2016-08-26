@@ -823,11 +823,11 @@ void mus_play_music(u8 *data) {
 	OPLplayMusic(mus);
 	mus->state = ST_PLAYING;
 	musState = MUS_PLAYING;
-	printf("starting music...");
+	//printf("starting music...");
 	svcSignalEvent(musRequest);
 	svcWaitSynchronization(musResponse, U64_MAX);
 	svcClearEvent(musResponse);
-	printf(" done\n");
+	//printf(" done\n");
 }
 
 void mus_stop_music() {
@@ -844,10 +844,10 @@ void mus_stop_music() {
 	mus->state = ST_STOPPED;
 	OPLstopMusic(mus);
 	musState = MUS_IDLE;
-	printf("stopping music...");
+	//printf("stopping music...");
 	svcWaitSynchronization(musResponse, U64_MAX);
 	svcClearEvent(musResponse);
-	printf(" done\n");
+	//printf(" done\n");
 }
 
 void mus_update_volume() {
