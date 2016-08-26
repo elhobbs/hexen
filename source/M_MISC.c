@@ -19,6 +19,7 @@
 	#include <sys/types.h>
 	#include <fcntl.h>
 	#include <stdlib.h>
+	#include "../3ds/keyboard.h"
 #else
 	#include <sys/stat.h>
 	#include <sys/types.h>
@@ -323,7 +324,8 @@ void M_FindResponseFile(void)
 			handle = fopen(&myargv[i][1], "rb");
 			if(!handle)
 			{
-				printf("\nNo such response file!");
+
+				printf("\nNo such response file!");
 				exit(1);
 			}
 			ST_Message("Found response file %s!\n",&myargv[i][1]);
@@ -460,6 +462,8 @@ extern int snd_MusicDevice, // current music card # (index to dmxCodes)
 extern int     snd_SBport, snd_SBirq, snd_SBdma;       // sound blaster variables
 extern int     snd_Mport;                              // midi variables
 #endif
+
+extern int keys3ds[32][3];
 
 default_t defaults[] =
 {
@@ -612,6 +616,29 @@ default_t defaults[] =
 	
 	{ "cstick_sensitivity", &cstickSensitivity, 5 },
 	{ "nub_sensitivity", &nubSensitivity, 5 },
+#ifdef _3DS
+	{ "KEY_A",		&keys3ds[ 0][1],	KEY_RCTRL }, //bit 00
+	{ "KEY_B",		&keys3ds[ 1][1],	' '}, //bit 01
+	{ "KEY_DRIGHT",	&keys3ds[ 4][1],	KEY_RIGHTARROW}, //bit 04
+	{ "KEY_DLEFT",	&keys3ds[ 5][1],	KEY_LEFTARROW}, //bit 05
+	{ "KEY_DUP",	&keys3ds[ 6][1],	KEY_UPARROW}, //bit 06
+	{ "KEY_DDOWN",	&keys3ds[ 7][1],	KEY_DOWNARROW}, //bit 07
+	{ "KEY_R",		&keys3ds[ 8][1],	'.'}, //bit 08
+	{ "KEY_L",		&keys3ds[ 9][1],	','}, //bit 09
+	{ "KEY_X",		&keys3ds[10][1],	'x'}, //bit 10
+	{ "KEY_Y",		&keys3ds[11][1],	'y'}, //bit 11
+	{ "KEY_ZL",		&keys3ds[14][1],	'['}, //bit 14
+	{ "KEY_ZR",		&keys3ds[15][1],	']'}, //bit 15
+
+	{ "AUX1",		&key_button_array[2 + 0].key,	KEY_AUX1 },
+	{ "AUX2",		&key_button_array[2 + 1].key,	KEY_AUX2 },
+	{ "AUX3",		&key_button_array[2 + 2].key,	KEY_AUX3 },
+	{ "AUX4",		&key_button_array[2 + 3].key,	KEY_AUX4 },
+	{ "AUX5",		&key_button_array[2 + 4].key,	KEY_AUX5 },
+	{ "AUX6",		&key_button_array[2 + 5].key,	KEY_AUX6 },
+	{ "AUX7",		&key_button_array[2 + 6].key,	KEY_AUX7 },
+	{ "AUX8",		&key_button_array[2 + 7].key,	KEY_AUX8 },
+#endif
 };
 
 int numdefaults;
@@ -740,7 +767,8 @@ void M_LoadDefaults(char *fileName)
 				}
 			}
 		}
-		fclose (f);
+
+		fclose (f);
 	}
 
 #ifdef __WATCOMC__

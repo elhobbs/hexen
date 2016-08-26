@@ -7,10 +7,6 @@ extern boolean	automapactive;
 extern boolean automapontop;
 static boolean	automapactive_last = false;
 
-typedef struct {
-	int x, y, type, dx, dy, key;
-	char *text, *shift_text;
-} sregion_t;
 
 void keyboard_draw_region(sregion_t *region, int index, u16 c);
 
@@ -21,16 +17,8 @@ int	keyboard_visible = 1; //0=hidden,1=fullsize,2=mini - numbers only
 
 static char key_buttons[] = "1234567890";
 
-#define	KEY_AUX1			207
-#define	KEY_AUX2			208
-#define	KEY_AUX3			209
-#define	KEY_AUX4			210
-#define	KEY_AUX5			211
-#define	KEY_AUX6			212
-#define	KEY_AUX7			213
-#define	KEY_AUX8			214
 
-static sregion_t key_button_array[] = {
+sregion_t key_button_array[] = {
 	{ 32, 0, 0, 0, 0, 0, key_buttons, key_buttons },
 	{ 270, 0, 6, 0, 0, 0x200, 0 },
 	{ -30, 32 * 1, 7, 0, 0, KEY_AUX1, KEY_AUX1 },
@@ -63,12 +51,6 @@ static char key_alt[] = "Alt";
 static char key_space[] = "     SPACE      ";
 static char key_backspace[] = "Bksp";
 static char key_return[] = "Rtrn";
-
-#define KEY_TAB        9
-#define KEY_CAPSLOCK   0xba                                        // phares
-#define KEY_RCTRL      (0x80+0x1d)
-#define KEY_RALT       (0x80+0x38)
-#define KEY_RSHIFT     (0x80+0x36)
 
 static sregion_t key_array[] = {
 	{ 0, 0 * 16, 0, 0, 0, 0, key_row_1, key_row_1_shift },

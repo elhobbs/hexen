@@ -51,6 +51,7 @@ typedef enum
 	MENU_SAVE,
 	MENU_CONFIG,
 	MENU_CALIBRATE,
+	MENU_REMAP,
 	MENU_NONE
 } MenuType_t;
 
@@ -290,6 +291,7 @@ static MenuItem_t OptionsItems[] =
 	{ ITT_EFUNC, "MESSAGES : ", SCMessages, 0, MENU_NONE },
 	{ ITT_SETMENU, "CALIBRATE", NULL, 0, MENU_CALIBRATE },
 	{ ITT_SETMENU, "CONTROLS", NULL, 0, MENU_CONFIG },
+	{ ITT_SETMENU, "REMAP BUTTONS", NULL, 0, MENU_REMAP },
 	{ ITT_SETMENU, "MORE...", NULL, 0, MENU_OPTIONS2 }
 };
 
@@ -297,7 +299,7 @@ static Menu_t OptionsMenu =
 {
 	88, 30,
 	DrawOptionsMenu,
-	5, OptionsItems,
+	6, OptionsItems,
 	0,
 	MENU_MAIN
 };
@@ -507,6 +509,97 @@ static Menu_t OptionsConfig =
 
 #endif
 
+#ifndef  DONT_KEYREMAP
+
+static int remap_offset = 0;
+//static int ConfigMenuStealKeys = 0;
+//static int *ConfigKey = 0;
+
+#define REMAP_START 50
+#define REMAP_END 69
+#define REMAP_COUNT (REMAP_END-REMAP_START)
+
+
+static boolean SCDoRemap(int option) {
+	if (remap_offset + REMAP_START + option <= REMAP_END) {
+		ConfigMenuStealKeys = true;
+		ConfigKey = defaults[remap_offset + REMAP_START + option].location;
+	}
+	return true;
+}
+
+
+static boolean SCDoRemapPage(int option) {
+	remap_offset += 8;
+	if (remap_offset >= REMAP_COUNT) {
+		remap_offset = 0;
+	}
+	return true;
+}
+
+static void DrawRemapMenu(void) {
+	int i;
+	int x;
+	int y;
+	Menu_t *menu = CurrentMenu;
+	char *name;
+
+	x = menu->x;
+	y = menu->y;
+	for (i = 0; i < 8; i++)
+	{
+		if (remap_offset + REMAP_START + i > REMAP_END) {
+			break;
+		}
+		MN_DrTextB(defaults[remap_offset + REMAP_START + i].name, x + 5, y);
+		if (ConfigMenuStealKeys && defaults[remap_offset + REMAP_START + i].location == ConfigKey) {
+			name = "PRESS A KEY";
+			MN_DrTextB(name, x + 5 + 200 - MN_TextBWidth(name), y);
+		}
+		else {
+			name = key_name(*defaults[remap_offset + REMAP_START + i].location);
+			MN_DrTextA(name, x + 5 + 200 - MN_TextAWidth(name), y + 5);
+		}
+		y += ITEM_HEIGHT;
+	}
+	MN_DrTextA("RESET DEFAULTS", x + 5, 8 * ITEM_HEIGHT + 10);
+	MN_DrTextA("MORE...", x + 5, 9 * ITEM_HEIGHT + 10);
+}
+
+static boolean SCDoRemapDefaults(int option) {
+	int i;
+	for (i = 0; i < REMAP_COUNT; i++)
+	{
+		*defaults[REMAP_START + i].location = defaults[REMAP_START + i].defaultvalue;
+	}
+	return true;
+}
+
+static MenuItem_t remapItems[] =
+{
+	{ ITT_EFUNC, NULL, SCDoRemap,	 0, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoRemap,	 1, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoRemap,	 2, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoRemap,	 3, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoRemap,	 4, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoRemap,	 5, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoRemap,	 6, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoRemap,	 7, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoRemapDefaults,	 8, MENU_NONE },
+	{ ITT_EFUNC, NULL, SCDoRemapPage,	 9, MENU_NONE },
+};
+
+static Menu_t OptionsRemap =
+{
+	90, 4,
+	DrawRemapMenu,
+	10, remapItems,
+	0,
+	MENU_REMAP
+};
+
+#endif
+
 static Menu_t *Menus[] =
 {
 	&MainMenu,
@@ -518,7 +611,8 @@ static Menu_t *Menus[] =
 	&LoadMenu,
 	&SaveMenu,
 	&OptionsConfig,
-	&CalibrateMenu
+	&CalibrateMenu,
+	&OptionsRemap
 };
 
 #if defined( __WATCOMC__) || defined(_3DS) || defined(_WIN32)
