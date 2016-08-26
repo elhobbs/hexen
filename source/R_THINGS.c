@@ -459,6 +459,8 @@ void R_DrawVisSprite (vissprite_t *vis, int x1, int x2)
 ===================
 */
 
+angle_t R_PointToAngle3(fixed_t x, fixed_t y);
+
 void R_ProjectSprite (mobj_t *thing)
 {
 	fixed_t		trx,try;
@@ -519,7 +521,7 @@ void R_ProjectSprite (mobj_t *thing)
 
 	if (sprframe->rotate)
 	{	// choose a different rotation based on player view
-		ang = R_PointToAngle (thing->x, thing->y);
+		ang = R_PointToAngle3 (thing->x, thing->y);
 		rot = (ang-thing->angle+(unsigned)(ANG45/2)*9)>>29;
 		lump = sprframe->lump[rot];
 		flip = (boolean)sprframe->flip[rot];

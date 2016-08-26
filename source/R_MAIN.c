@@ -15,6 +15,7 @@
 #include "r_local.h"
 
 int			viewangleoffset;
+int			_viewx, _viewy;
 
 #ifdef __WATCOMC__
 int newViewAngleOff;
@@ -274,6 +275,53 @@ angle_t R_PointToAngle2 (fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2)
 	viewx = x1;
 	viewy = y1;
 	return R_PointToAngle (x2, y2);
+}
+
+angle_t R_PointToAngle3(fixed_t x, fixed_t y)
+{
+	x -= _viewx;
+	y -= _viewy;
+	if ((!x) && (!y))
+		return 0;
+	if (x >= 0)
+	{	// x >=0
+		if (y >= 0)
+		{	// y>= 0
+			if (x>y)
+				return tantoangle[SlopeDiv(y, x)];     // octant 0
+			else
+				return ANG90 - 1 - tantoangle[SlopeDiv(x, y)];  // octant 1
+		}
+		else
+		{	// y<0
+			y = -y;
+			if (x>y)
+				return -tantoangle[SlopeDiv(y, x)];  // octant 8
+			else
+				return ANG270 + tantoangle[SlopeDiv(x, y)];  // octant 7
+		}
+	}
+	else
+	{	// x<0
+		x = -x;
+		if (y >= 0)
+		{	// y>= 0
+			if (x>y)
+				return ANG180 - 1 - tantoangle[SlopeDiv(y, x)]; // octant 3
+			else
+				return ANG90 + tantoangle[SlopeDiv(x, y)];  // octant 2
+		}
+		else
+		{	// y<0
+			y = -y;
+			if (x>y)
+				return ANG180 + tantoangle[SlopeDiv(y, x)];  // octant 4
+			else
+				return ANG270 - 1 - tantoangle[SlopeDiv(x, y)];  // octant 5
+		}
+	}
+
+	return 0;
 }
 
 
@@ -845,15 +893,16 @@ void R_RenderPlayerView (player_t *player)
 	int sep = (slideamt*5.0f);
 	angle_t ang = (slideamt*ANG5);
 	fixed_t vsin, vcos;
-	boolean run_netupdate = false;
 
 	R_SetupFrame (player);
+
+	_viewx = viewx;
+	_viewy = viewy;
 
 	if (*slider > 0.0f && !MenuActive) {
 		if (screen_side  == 1) {
 			ang = -ang;
 			sep = -sep;
-			run_netupdate = true;
 		}
 
 		vsin = finesine[(viewangle - ANG90) >> ANGLETOFINESHIFT];
@@ -864,15 +913,13 @@ void R_RenderPlayerView (player_t *player)
 		viewy -= sep * vsin;
 		viewangleoffset = -sep;
 	}
-	else {
-		run_netupdate = true;
-	}
+
 
 	R_ClearClipSegs ();
 	R_ClearDrawSegs ();
 	R_ClearPlanes ();
 	R_ClearSprites ();
-	NetUpdate ();					// check for new console commands
+	NetUpdate();					// check for new console commands
 
 	// Make displayed player invisible locally
 	if (localQuakeHappening[displayplayer] && gamestate == GS_LEVEL)
@@ -886,15 +933,9 @@ void R_RenderPlayerView (player_t *player)
 		R_RenderBSPNode (numnodes-1);	// head node is the last node output
 	}
 
-	if (run_netupdate) {
-		NetUpdate();					// check for new console commands
-	}
+	NetUpdate();					// check for new console commands
 	R_DrawPlanes ();
-	if (run_netupdate) {
-		NetUpdate();					// check for new console commands
-	}
+	NetUpdate();					// check for new console commands
 	R_DrawMasked ();
-	if (run_netupdate) {
-		NetUpdate();					// check for new console commands
-	}
+	NetUpdate();					// check for new console commands
 }

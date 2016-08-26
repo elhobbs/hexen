@@ -723,9 +723,7 @@ static void DrawAndBlit(void)
 		MN_Drawer();
 
 		// Send out any new accumulation
-		if ((screen_side & 1) != 0) {
-			NetUpdate();
-		}
+		NetUpdate();
 
 		// Flush buffered stuff to screen
 		I_Update();

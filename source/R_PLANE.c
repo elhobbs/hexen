@@ -360,7 +360,7 @@ void R_MakeSpans(int x, int t1, int b1, int t2, int b2)
 //
 //==========================================================================
 
-#define SKYTEXTUREMIDSHIFTED 200
+#define SKYTEXTUREMIDSHIFTED 240
 
 void R_DrawPlanes(void)
 {
