@@ -445,16 +445,20 @@ void copy_screen(int side) {
 	u8* bufAdr = gfxGetFramebuffer(GFX_TOP, side, &screen_height, &screen_width);
 	byte *src = screen;
 	int w, h;
+	u32 c;
 
 	for (w = 0; w<SCREENWIDTH; w++)
 	{
+		u32 v1 = (SCREENHEIGHT-1) * SCREENWIDTH + w;
+		u32 v  = (w * SCREENHEIGHT) * 3;
 		for (h = 0; h<SCREENHEIGHT; h++)
 		{
-			u32 v = (w * screen_height + h) * 3;
-			u32 v1 = ((SCREENHEIGHT - h - 1) * SCREENWIDTH + w);
-			bufAdr[v] = pal3ds[src[v1] * 3 + 2];
-			bufAdr[v + 1] = pal3ds[src[v1] * 3 + 1];
-			bufAdr[v + 2] = pal3ds[src[v1] * 3 + 0];
+			c = src[v1]*3;
+			bufAdr[v    ] = pal3ds[c + 2];
+			bufAdr[v + 1] = pal3ds[c + 1];
+			bufAdr[v + 2] = pal3ds[c + 0];
+			v1 -= SCREENWIDTH;
+			v += 3;
 		}
 	}
 #endif
@@ -468,6 +472,7 @@ void copy_subscreen(int side) {
 	int w, h;
 	int rows_to_copy;
 	int row_start;
+	u32 c;
 
 	if (!automapactive || automapontop) {
 		rows_to_copy = 66;
@@ -480,18 +485,21 @@ void copy_subscreen(int side) {
 
 	for (w = 0; w<320; w++)
 	{
+		u32 v1 = (SCREENHEIGHT - 1) * SCREENWIDTH + w;
+		u32 v = (w * SCREENHEIGHT);
 		for (h = 0; h<rows_to_copy; h++)
 		{
-			u32 v = (w * screen_height + h);
-			u32 v1 = ((240 - h - 1) * SCREENWIDTH + w);
-			switch (src[v1]) {
+			c = src[v1]*3;
+			switch (c) {
 			case 0:
 				bufAdr[v] = 0;
 				break;
 			default:
-				bufAdr[v] = RGB8_to_565(pal3ds[src[v1] * 3 + 0], pal3ds[src[v1] * 3 + 1], pal3ds[src[v1] * 3 + 2]);
+				bufAdr[v] = RGB8_to_565(pal3ds[c + 0], pal3ds[c + 1], pal3ds[c + 2]);
 				break;
 			}
+			v1 -= SCREENWIDTH;
+			v++;
 		}
 	}
 #endif

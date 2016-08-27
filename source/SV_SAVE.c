@@ -650,7 +650,7 @@ boolean SV_RebornSlotAvailable(void)
 	char fileName[100];
 
 	sprintf(fileName, "%shex%d.hxs", SavePath, REBORN_SLOT);
-	printf("reborn slot: %s\n", fileName);
+	//printf("reborn slot: %s\n", fileName);
 	return ExistingFile(fileName);
 }
 

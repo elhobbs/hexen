@@ -647,6 +647,7 @@ void S_Update();
 static void DrawAndBlit(void)
 {
 	int i;
+	//u64 start = svcGetSystemTick();
 
 	if (*slider == 0.0f) {
 		screen_side = 1;
@@ -741,6 +742,8 @@ static void DrawAndBlit(void)
 	}
 
 	screen_side = 3;
+	//u64 end = svcGetSystemTick();
+	//printf("tick: %10lld\n", end - start);
 }
 
 //==========================================================================

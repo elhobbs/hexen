@@ -843,6 +843,9 @@ void keyboard_draw()
 		else {
 			consoleClear();
 			memset(keyboard_screen, 0, 320 * 240 * 2);
+			if (keyboard_visible == 2) {
+				h = 0;
+			}
 			consoleSetWindow(0, 0, 0, 40, h);
 		}
 

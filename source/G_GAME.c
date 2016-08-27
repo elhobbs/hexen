@@ -1435,7 +1435,7 @@ void G_DoReborn(int playernum)
 		}
 		else
 		{ // Start a new game if there's no reborn info
-			printf("G_DoReborn: %d\n", gameaction);
+			//printf("G_DoReborn: %d\n", gameaction);
 			gameaction = ga_newgame;
 		}
 	}
