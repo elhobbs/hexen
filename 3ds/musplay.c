@@ -19,6 +19,8 @@
 #include "opl.h"
 
 #include "H2DEF.H"
+#define MUS_MIX_CHANNEL 1
+#define MUS_PLAYBACK_RATE 11025
 
 void mixer_update(short *pAudioData, int count);
 int mixer_pos();
@@ -927,7 +929,7 @@ void mus_frame() {
 	if (adlib_mus - nxt <= 0) {
 		//printf("mus: %5d %5.6f\n", adlib_mus - nxt,nxt/32767.0f);
 		mus_play_timer();
-		adlib_mus += 233;
+		adlib_mus += (MUS_PLAYBACK_RATE/140);
 	}
 	if (adlib_pos < nxt) {
 		adlib_pos = nxt;
@@ -956,7 +958,7 @@ void mus_frame() {
 		svcSleepThread(500000);
 	}
 }
-
+void mus_dsp_submit(void);
 static void adlibThreadMain(void* arg) {
 	//make sure the mus thread starts
 	svcWaitSynchronization(musRequest, U64_MAX);
@@ -981,7 +983,8 @@ static void adlibThreadMain(void* arg) {
 				//printf("\n at %08x...", mixer_pos());
 				//gfxFlushBuffers();
 				mus_frame();
-				svcSleepThread(50000);
+				svcSleepThread(500);
+				mus_dsp_submit();
 			} while (musState == MUS_PLAYING);
 
 			//svcSleepThread(5000000000LL);
@@ -1014,7 +1017,7 @@ int mus_setup_timer() {
 	adlib_mus = adlib_pos = mixer_pos();
 
 	printf("starting music thread...");
-	ret = svcCreateThread(&adlibHandle, adlibThreadMain, 0x0, (u32*)((char*)adlibStack + sizeof(adlibStack)), 0x24, -2);
+	ret = svcCreateThread(&adlibHandle, adlibThreadMain, 0x0, (u32*)((char*)adlibStack + sizeof(adlibStack)), 0x18, -2);
 	if (ret != 0) {
 		printf(" failed %d\n", ret);
 		gfxFlushBuffers();
@@ -1026,8 +1029,8 @@ int mus_setup_timer() {
 	svcClearEvent(musResponse);
 	printf(" done\n");
 	gfxFlushBuffers();
+	svcSleepThread(3000000000LL);
 	return 0;
-	//svcSleepThread(3000000000LL);
 }
 extern int audio_initialized;
 
@@ -1036,7 +1039,7 @@ void mus_init() {
 	//	return;
 	//}
 
-	if (!OPL_Init(32728))
+	if (!OPL_Init(MUS_PLAYBACK_RATE))
 	{
 		//printf("Dude.  The Adlib isn't responding.\n");
 		return;
@@ -1101,7 +1104,7 @@ void mus_exit() {
 
 static int snd_channels = 2;
 static int snd_samplebits = 16;
-static int snd_speed = 11025;
+static int snd_speed = MUS_PLAYBACK_RATE;
 static int snd_samples;
 static int snd_samplepos;
 static byte* snd_buffer;
@@ -1116,7 +1119,7 @@ static volatile int	snd_sent, snd_completed;
 
 static int	gSndBufSize = 0;
 #ifdef _3DS
-static ndspWaveBuf gWavebuf[WAV_BUFFERS];
+static volatile ndspWaveBuf gWavebuf[WAV_BUFFERS];
 #endif
 static float gMix[12];
 
@@ -1144,9 +1147,9 @@ static void dsp_init() {
 	memset(lpData, 0, gSndBufSize);
 #ifdef _3DS
 	//ndspInit();
-	ndspChnSetInterp(1, NDSP_INTERP_NONE);
-	ndspChnSetRate(1, (float)snd_speed);
-	ndspChnSetFormat(1, NDSP_FORMAT_STEREO_PCM16);
+	ndspChnSetInterp(MUS_MIX_CHANNEL, NDSP_INTERP_NONE);
+	ndspChnSetRate(MUS_MIX_CHANNEL, (float)snd_speed);
+	ndspChnSetFormat(MUS_MIX_CHANNEL, NDSP_FORMAT_STEREO_PCM16);
 	memset(gWavebuf, 0, sizeof(ndspWaveBuf)*WAV_BUFFERS);
 	memset(gMix, 0, sizeof(gMix));
 	DSP_FlushDataCache(lpData, gSndBufSize);
@@ -1169,7 +1172,7 @@ static void dsp_init() {
 
 static void dsp_shutdown() {
 #ifdef _3DS
-	ndspChnWaveBufClear(1);
+	ndspChnWaveBufClear(MUS_MIX_CHANNEL);
 	svcSleepThread(20000);
 	//ndspExit();
 #endif
@@ -1222,7 +1225,7 @@ void mus_dsp_submit(void)
 	{
 #ifdef _3DS
 		//h = lpWaveHdr + (snd_sent&WAV_MASK);
-		ndspChnWaveBufAdd(1, gWavebuf + (snd_sent&WAV_MASK));
+		ndspChnWaveBufAdd(MUS_MIX_CHANNEL, gWavebuf + (snd_sent&WAV_MASK));
 #endif
 		snd_sent++;
 		/*
@@ -1344,5 +1347,13 @@ void mixer_exit() {
 }
 
 void mixer_clear() {
-	ndspChnWaveBufClear(1);
+	int i;
+	ndspChnWaveBufClear(MUS_MIX_CHANNEL);
+	svcSleepThread(20000);
+	snd_sent = 0;
+	snd_completed = 0;
+	for (i = 0; i<WAV_BUFFERS; i++)
+	{
+		gWavebuf[i].status = NDSP_WBUF_FREE;
+	}
 }

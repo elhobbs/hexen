@@ -104,7 +104,8 @@ void R_DrawColumnInCache (column_t *patch, byte *cache, int originy, int cachehe
 		if (count > 0)
 			memcpy (cache + position, source, count);
 		
-		patch = (column_t *)(  (byte *)patch + patch->length+ 4);
+		patch = (column_t *)(  (byte *)patch + patch->length
++ 4);
 	}
 }
 
@@ -201,7 +202,7 @@ void R_GenerateLookup (int texnum)
 // fill in the lump / offset, so columns with only a single patch are
 // all done
 //
-	patchcount = (byte *)malloc (texture->width);
+	patchcount = (byte *)hmalloc (texture->width);
 	memset (patchcount, 0, texture->width);
 	patch = texture->patches;
 		
@@ -243,7 +244,7 @@ void R_GenerateLookup (int texnum)
 	}	
 end:
 	if (patchcount) {
-		free(patchcount);
+		hfree(patchcount);
 	}
 }
 
@@ -305,7 +306,7 @@ void R_InitTextures (void)
 	names = W_CacheLumpName ("PNAMES", PU_STATIC);
 	nummappatches = LONG ( *((int *)names) );
 	name_p = names+4;
-	patchlookup = malloc (nummappatches*sizeof(*patchlookup));
+	patchlookup = hmalloc (nummappatches*sizeof(*patchlookup));
 	for (i=0 ; i<nummappatches ; i++)
 	{
 		strncpy (name,name_p+i*8, 8);
@@ -395,7 +396,7 @@ void R_InitTextures (void)
 	if (maptex2)
 		Z_Free (maptex2);
 	if (patchlookup) {
-		free(patchlookup);
+		hfree(patchlookup);
 	}
 
 //
@@ -619,7 +620,7 @@ void R_PrecacheLevel (void)
 //
 // precache flats
 //	
-	flatpresent = malloc(numflats);
+	flatpresent = hmalloc(numflats);
 	memset (flatpresent,0,numflats);	
 	for (i=0 ; i<numsectors ; i++)
 	{
@@ -639,7 +640,7 @@ void R_PrecacheLevel (void)
 //
 // precache textures
 //
-	texturepresent = malloc(numtextures);
+	texturepresent = hmalloc(numtextures);
 	memset (texturepresent,0, numtextures);
 	
 	for (i=0 ; i<numsides ; i++)
@@ -669,7 +670,7 @@ void R_PrecacheLevel (void)
 //
 // precache sprites
 //
-	spritepresent = malloc(numsprites);
+	spritepresent = hmalloc(numsprites);
 	memset (spritepresent,0, numsprites);
 	
 	for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
@@ -696,12 +697,12 @@ void R_PrecacheLevel (void)
 	}
 
 	if (flatpresent) {
-		free(flatpresent);
+		hfree(flatpresent);
 	}
 	if (texturepresent) {
-		free(texturepresent);
+		hfree(texturepresent);
 	}
 	if (spritepresent) {
-		free(spritepresent);
+		hfree(spritepresent);
 	}
 }

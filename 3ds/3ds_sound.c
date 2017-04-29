@@ -795,7 +795,7 @@ void S_UpdateSounds(mobj_t *listener)
 	I_UpdateChannels();
 	S_Update();
 	//mus_stats();
-	mus_dsp_submit();
+	//mus_dsp_submit();
 }
 
 #ifdef _WIN32

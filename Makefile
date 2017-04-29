@@ -45,10 +45,7 @@ CFLAGS	:=	-g -Wall -O3 -mword-relocations \
 			-fomit-frame-pointer -ffunction-sections \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS \
-			-DARM -DUSE_DL_PREFIX -DHAVE_MORECORE=0 -DHAVE_MMAP=0 \
-			-DONLY_MSPACES -DMSPACES -Dmalloc_getpagesize=128 \
-			-DNO_MALLINFO
+CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 

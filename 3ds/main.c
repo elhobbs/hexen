@@ -8,7 +8,7 @@
 #include "ST_START.H"
 
 #ifdef _3DS
-u32 __stacksize__ = 1024 * 1024;
+u32 __stacksize__ = 512 * 1024;
 #endif
 
 int DisplayTicker = 0;
@@ -114,7 +114,7 @@ void I_InitNetwork(void)
 		//
 		// single player game
 		//
-		doomcom = malloc(sizeof(*doomcom));
+		doomcom = hmalloc(sizeof(*doomcom));
 		memset(doomcom, 0, sizeof(*doomcom));
 		netgame = false;
 		doomcom->id = DOOMCOM_ID;
@@ -267,7 +267,7 @@ void I_Quit(void)
 byte *I_ZoneBase(int *size)
 {
 	int heap = 24*1024*1024;
-	byte *ptr = malloc(heap);;
+	byte *ptr = hmalloc(heap);;
 
 	*size = heap;
 	return ptr;
@@ -283,7 +283,12 @@ byte *I_ZoneBase(int *size)
 
 byte *I_AllocLow(int length)
 {
-	byte *mem = (byte *)malloc(length);
+	byte *mem = (byte *)hmalloc(length);
+	printf("alloc_low: %p\n", mem);
+
+	if (mem == 0) {
+		while (1);
+	}
 
 	memset(mem, 0, length);
 	return mem;
@@ -868,3 +873,29 @@ fixed_t FixedDiv(fixed_t a, fixed_t b)
 }
 
 #endif
+
+static FILE *_log = 0;
+
+void* __hmalloc(size_t s, char *_file, int _line) {
+	void *p = malloc(s);
+#if 0
+	if (_log == 0) {
+		_log = fopen("hmalloc.txt", "w");
+	}
+	printf("malloc: %p %d %s %d\n", p, s, _file, _line);
+	fprintf(_log,"malloc: %p %d %s %d\r\n", p, s, _file, _line);
+	fflush(_log);
+#endif
+	return p;
+}
+
+void __hfree(void *p, char *_file, int _line) {
+#if 0
+	if (_log == 0) {
+		_log = fopen("hmalloc.txt", "w");
+	}
+	printf("free: %p %s %d\n", p, _file, _line);
+	fprintf(_log,"free: %p %s %d\r\n", p, _file, _line);
+#endif
+	free(p);
+}

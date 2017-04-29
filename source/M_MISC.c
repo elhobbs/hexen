@@ -277,7 +277,7 @@ static int ReadFile(char const *name, byte **buffer, int mallocType)
 	}
 	else
 	{ // Use c library memory allocation
-		buf = malloc(length);
+		buf = hmalloc(length);
 		if(buf == NULL)
 		{
 			I_Error("Couldn't malloc buffer %d for file %s.",
@@ -332,7 +332,7 @@ void M_FindResponseFile(void)
 			fseek (handle,0,SEEK_END);
 			size = ftell(handle);
 			fseek (handle,0,SEEK_SET);
-			file = malloc (size);
+			file = hmalloc (size);
 			fread (file,size,1,handle);
 			fclose (handle);
 
@@ -341,7 +341,7 @@ void M_FindResponseFile(void)
 				moreargs[index++] = myargv[k];
 			
 			firstargv = myargv[0];
-			myargv = malloc(sizeof(char *)*MAXARGVS);
+			myargv = hmalloc(sizeof(char *)*MAXARGVS);
 			memset(myargv,0,sizeof(char *)*MAXARGVS);
 			myargv[0] = firstargv;
 			
@@ -737,7 +737,7 @@ void M_LoadDefaults(char *fileName)
 					 // Get a string default
 					 isstring = true;
 					 len = strlen(strparm);
-					 newstring = (char *)malloc(len);
+					 newstring = (char *)hmalloc(len);
 					 if (newstring == NULL) I_Error("can't malloc newstring");
 					 strparm[len-1] = 0;
 					 strcpy(newstring, strparm+1);

@@ -19,6 +19,7 @@
 #include <malloc.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #else
 #include <malloc.h>
 #include <io.h>
@@ -26,6 +27,8 @@
 #include <sys/stat.h>
 #endif
 #include "h2def.h"
+
+
 
 // MACROS ------------------------------------------------------------------
 
@@ -35,6 +38,8 @@
 #define strcmpi strcasecmp
 #endif
 
+#define PACKEDATTR __attribute__((packed))
+
 // TYPES -------------------------------------------------------------------
 
 typedef struct
@@ -42,14 +47,14 @@ typedef struct
 	char identification[4];
 	int numlumps;
 	int infotableofs;
-} wadinfo_t;
+} PACKEDATTR wadinfo_t;
 
 typedef struct
 {
 	int filepos;
 	int size;
 	char name[8];
-} filelump_t;
+} PACKEDATTR filelump_t;
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -62,8 +67,8 @@ typedef struct
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 lumpinfo_t *lumpinfo;
-int numlumps;
-void **lumpcache;
+int numlumps = 0;
+void **lumpcache = 0;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -122,8 +127,8 @@ void W_AddFile(char *filename)
 {
 	wadinfo_t header;
 	lumpinfo_t *lump_p;
-	unsigned i;
-	int handle, length;
+	unsigned i, j;
+	int handle, length, cb_read;
 	int startlump;
 	filelump_t *fileinfo, singleinfo;
 	filelump_t *freeFileInfo = 0;
@@ -136,7 +141,6 @@ void W_AddFile(char *filename)
 	if(strcasecmp(filename+strlen(filename)-3, "wad"))
 	{ // Single lump file
 		fileinfo = &singleinfo;
-		freeFileInfo = NULL;
 		singleinfo.filepos = 0;
 		singleinfo.size = LONG(filelength(handle));
 		M_ExtractFileBase(filename, singleinfo.name);
@@ -144,7 +148,10 @@ void W_AddFile(char *filename)
 	}
 	else
 	{ // WAD file
-		read(handle, &header, sizeof(header));
+		cb_read = read(handle, &header, sizeof(header));
+		if (cb_read != sizeof(header)) {
+			I_Error("read:  %d %d\n", cb_read, sizeof(header));
+		}
 		if(strncmp(header.identification, "IWAD", 4))
 		{
 			if(strncmp(header.identification, "PWAD", 4))
@@ -153,38 +160,65 @@ void W_AddFile(char *filename)
 					filename);
 			}
 		}
+		//printf("%d %d\n", header.numlumps, header.infotableofs);
 		header.numlumps = LONG(header.numlumps);
 		header.infotableofs = LONG(header.infotableofs);
 		length = header.numlumps*sizeof(filelump_t);
-//		fileinfo = alloca(length);
-		if(!(fileinfo = malloc(length)))
+		//printf("%d %d %d\n", header.numlumps, header.infotableofs, length);
+		//		fileinfo = alloca(length);
+		if(!(fileinfo = hmalloc(length)))
 		{
 			I_Error("W_AddFile:  fileinfo malloc failed\n");
 		}
 		freeFileInfo = fileinfo;
 		lseek(handle, header.infotableofs, SEEK_SET);
-		read(handle, fileinfo, length);
+		cb_read = read(handle, fileinfo, length);
+		if (cb_read != length) {
+			I_Error("read:  %d %d\n", cb_read, length);
+		}
 		numlumps += header.numlumps;
 	}
 
 	// Fill in lumpinfo
-	lumpinfo = realloc(lumpinfo, numlumps*sizeof(lumpinfo_t));
+	//printf("%p %d\n", lumpinfo, numlumps);
+	{
+		lumpinfo_t *temp = hmalloc(numlumps * sizeof(lumpinfo_t));
+		if (startlump > 0) {
+			memcpy(temp, lumpinfo, startlump * sizeof(lumpinfo_t));
+		}
+		//printf("lumpinfo: %p\n", lumpinfo);
+		hfree(lumpinfo);
+		lumpinfo = temp;
+		/*for (i = 0; i < header.numlumps; i++)
+		{
+			printf("%4d: %8s %p\n", i, fileinfo[i].name, &fileinfo[i]);
+			if (i > 5) break;
+		}*/
+	}
+	//lumpinfo = realloc(lumpinfo, numlumps*sizeof(lumpinfo_t));
+	if ((((u32)lumpinfo) & 0x3) != 0) {
+		I_Error("misaligned lumpinfo");
+	}
 	if(!lumpinfo)
 	{
 		I_Error("Couldn't realloc lumpinfo");
 	}
 	lump_p = &lumpinfo[startlump];
-	for(i = startlump; i < numlumps; i++, lump_p++, fileinfo++)
+	//printf("%p %d %p %d\n", lumpinfo, startlump, fileinfo, numlumps);
+	for(i = startlump,j=0; i < numlumps; i++, j++)
 	{
-		lump_p->handle = handle;
-		lump_p->position = LONG(fileinfo->filepos);
-		lump_p->size = LONG(fileinfo->size);
-		strncpy(lump_p->name, fileinfo->name, 8);
+		lumpinfo[i].handle = handle;
+		lumpinfo[i].position = (fileinfo[j].filepos);
+		lumpinfo[i].size = (fileinfo[j].size);
+		memcpy(lumpinfo[i].name, fileinfo[j].name, 8);
+		//printf("%4d: %8s %p %p\n", i, fileinfo[j].name, &fileinfo[j], &lumpinfo[i]);
+		//if (i > 5) break;
 	}
 	if(freeFileInfo)
 	{
-		free(freeFileInfo);
+		hfree(freeFileInfo);
 	}
+	//while (1);
 }
 
 //==========================================================================
@@ -204,7 +238,7 @@ void W_InitMultipleFiles(char **filenames)
 
 	// Open all the files, load headers, and count lumps
 	numlumps = 0;
-	lumpinfo = malloc(1); // Will be realloced as lumps are added
+	lumpinfo = hmalloc(16); // Will be realloced as lumps are added
 
 	for(; *filenames; filenames++)
 	{
@@ -217,7 +251,7 @@ void W_InitMultipleFiles(char **filenames)
 
 	// Set up caching
 	size = numlumps*sizeof(*lumpcache);
-	lumpcache = malloc(size);
+	lumpcache = hmalloc(size);
 	if(!lumpcache)
 	{
 		I_Error("Couldn't allocate lumpcache");
@@ -411,10 +445,11 @@ int	W_NumLumps(void)
 
 int W_CheckNumForName(char *name)
 {
-	char name8[9];
+	int align4[4];
+	char *name8 = (char *)align4;
 	int v1, v2;
 	lumpinfo_t *lump_p;
-
+	
 	// Make the name into two integers for easy compares
 	strncpy(name8, name, 8);
 	name8[8] = 0; // in case the name was a full 8 chars
@@ -426,6 +461,7 @@ int W_CheckNumForName(char *name)
 	lump_p = lumpinfo+numlumps;
 	while(lump_p-- != lumpinfo)
 	{
+		//printf("%8s %p\n", lump_p->name, lump_p->name);
 		if(*(int *)lump_p->name == v1 && *(int *)&lump_p->name[4] == v2)
 		{
 			return lump_p-lumpinfo;
@@ -451,7 +487,7 @@ int	W_GetNumForName (char *name)
 	{
 		return i;
 	}
-	I_Error("W_GetNumForName: %s not found!", name);
+	I_Error("W_GetNumForName: %s not found (%d) %d!", name, numlumps, sizeof(lumpinfo_t));
 	return -1;
 }
 

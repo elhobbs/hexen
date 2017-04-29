@@ -23,6 +23,7 @@
 #endif
 #ifdef _3DS
 #include <3ds.h>
+#undef _WIN32
 #endif
 #ifdef _WIN32
 #define	strcasecmp strcmpi
@@ -1511,5 +1512,14 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch);
 void V_DrawRawScreen(byte *raw);
 
 #include "sounds.h"
+
+#define STRINGIZE_DETAIL(x) #x
+#define STRINGIZE(x) STRINGIZE_DETAIL(x)
+
+#define hmalloc(s) __hmalloc(s,__FILE__,__LINE__)
+#define hfree(p) __hfree(p,__FILE__,__LINE__)
+
+void* __hmalloc(size_t s,char *_file, int _line);
+void __hfree(void *p, char *_file, int _line);
 
 #endif // __H2DEF__

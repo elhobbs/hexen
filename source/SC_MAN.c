@@ -175,7 +175,7 @@ void SC_Close(void)
 	{
 		if(ScriptFreeCLib == true)
 		{
-			free(ScriptBuffer);
+			hfree(ScriptBuffer);
 		}
 		else
 		{

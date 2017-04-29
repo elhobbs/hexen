@@ -131,7 +131,8 @@ static char *wadfiles[MAXWADFILES] =
 #else
 static char *wadfiles[MAXWADFILES] =
 {
-	"hexen.wad"
+	"hexen.wad",
+	0
 };
 #endif
 static execOpt_t ExecOptions[] =
@@ -175,6 +176,7 @@ void H2_Main(void)
 {
 	int p;
 
+	waitforit(__FILE__":"STRINGIZE(__LINE__));
 	M_FindResponseFile();
 	setbuf(stdout, NULL);
 	startepisode = 1;
@@ -183,24 +185,30 @@ void H2_Main(void)
 	startmap = 1;
 	shareware = false; // Always false for Hexen
 
+	waitforit(__FILE__":"STRINGIZE(__LINE__));
 	HandleArgs();
 
 	// Initialize subsystems
 
+	waitforit(__FILE__":"STRINGIZE(__LINE__));
 	ST_Message("V_Init: allocate screens.\n");
+	waitforit(__FILE__":"STRINGIZE(__LINE__));
 	V_Init();
 
 	// Load defaults before initing other systems
+	waitforit(__FILE__":"STRINGIZE(__LINE__));
 	ST_Message("M_LoadDefaults: Load system defaults.\n");
 	M_LoadDefaults(CONFIG_FILE_NAME);
 
 	// Now that the savedir is loaded from .CFG, make sure it exists
+	waitforit(__FILE__":"STRINGIZE(__LINE__));
 	CreateSavePath();
 
 	// HEXEN MODIFICATION:
 	// There is a realloc() in W_AddFile() that might fail if the zone
 	// heap has been previously allocated, so we need to initialize the
 	// WAD files BEFORE the zone memory initialization.
+	waitforit(__FILE__":"STRINGIZE(__LINE__));
 	ST_Message("W_Init: Init WADfiles.\n");
 	W_InitMultipleFiles(wadfiles);
 
@@ -481,13 +489,13 @@ static void ExecOptionDEVMAPS(char **args, int tag)
 	SC_MustGetStringName("mapsdir");
 	SC_MustGetString();
 	ST_Message("[mapsdir   ] = %s\n", sc_String);
-	DevMapsDir = malloc(strlen(sc_String)+1);
+	DevMapsDir = hmalloc(strlen(sc_String)+1);
 	strcpy(DevMapsDir, sc_String);
 	SC_MustGetStringName("scriptsdir");
 	SC_MustGetString();
 	ST_Message("[scriptsdir] = %s\n", sc_String);
 	sc_FileScripts = true;
-	sc_ScriptsDir = malloc(strlen(sc_String)+1);
+	sc_ScriptsDir = hmalloc(strlen(sc_String)+1);
 	strcpy(sc_ScriptsDir, sc_String);
 	while(SC_GetString())
 	{
@@ -924,7 +932,7 @@ static void AddWADFile(char *file)
 	{
 		i++;
 	}
-	new = malloc(strlen(file)+1);
+	new = hmalloc(strlen(file)+1);
 	strcpy(new, file);
 	wadfiles[i] = new;
 }
@@ -974,7 +982,7 @@ static void CreateSavePath(void)
 
 	if(cdrom == true)
 	{
-		SavePath = "c:\\hexndata\\";
+		SavePath = "./hexndata/";
 	}
 	len = strlen(SavePath);
 	if (len >= 120) I_Error("Save path too long\n");
