@@ -36,6 +36,14 @@ DATA		:=	data
 INCLUDES	:=	include
 #ROMFS		:=	romfs
 
+APP_TITLE	:=	hexen
+APP_DESCRIPTION	:= hexen for the 3ds
+APP_AUTHOR	:= elhobbs
+
+
+
+export	OUTPUT_FORMAT	?= 3dsx
+
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
@@ -142,11 +150,20 @@ clean:
 	@echo clean ...
 	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf
 
+ cia:
+		@make $(MAKEFLAGS) OUTPUT_FORMAT=cia
+
+ 3dsx:
+		@make $(MAKEFLAGS) OUTPUT_FORMAT=3dsx
 
 #---------------------------------------------------------------------------------
 else
 
 DEPENDS	:=	$(OFILES:.o=.d)
+
+.PHONY: all
+
+all:	$(OUTPUT).$(OUTPUT_FORMAT)
 
 #---------------------------------------------------------------------------------
 # main targets
@@ -158,6 +175,19 @@ $(OUTPUT).3dsx	:	$(OUTPUT).elf
 endif
 
 $(OUTPUT).elf	:	$(OFILES)
+
+$(OUTPUT).cia	:	$(OUTPUT).elf
+	@echo built ... $< $@ 
+	@echo $(notdir $(OUTPUT))
+	@cp $(OUTPUT).elf $(TARGET)_stripped.elf
+	arm-none-eabi-strip $(TARGET)_stripped.elf
+ifeq ($(shell uname),Linux)
+	makerom -f cci -rsf $(TOPDIR)/resources/gw_workaround.rsf -target d -exefslogo -elf $(TARGET)_stripped.elf -icon $(TOPDIR)/resources/icon.bin -banner $(TOPDIR)/resources/banner.bin -o $(TOPDIR)/$(notdir $(OUTPUT)).3ds
+	makerom -f cia -o $(OUTPUT).cia -elf $(TARGET)_stripped.elf -rsf $(TOPDIR)/resources/template.rsf -icon $(TOPDIR)/resources/icon.bin -banner $(TOPDIR)/resources/banner.bin -exefslogo -target t
+else
+	$(TOPDIR)\resources\makerom32.exe -f cci -rsf $(TOPDIR)\resources\gw_workaround.rsf -target d -exefslogo -elf $(TARGET)_stripped.elf -icon $(TOPDIR)\resources\icon.bin -banner $(TOPDIR)\resources\banner.bin -o $(TOPDIR)\$(notdir $(OUTPUT)).3ds
+	$(TOPDIR)\resources\makerom32.exe -f cia -o $(OUTPUT).cia -elf $(TARGET)_stripped.elf -rsf $(TOPDIR)\resources\template.rsf -icon $(TOPDIR)\resources\icon.bin -banner $(TOPDIR)\resources\banner.bin -exefslogo -target t
+endif
 
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data

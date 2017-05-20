@@ -33,6 +33,11 @@ void _3ds_shutdown() {
 #endif
 }
 
+void set_default_dir() {
+	static const char current_dir_dummy[] = { "sdmc:/3ds/hexen/" };
+	chdir(current_dir_dummy);
+}
+
 int main(int argc, char**argv)
 {
 #ifdef _3DS
@@ -44,6 +49,11 @@ int main(int argc, char**argv)
 #endif
 
 	printf("gfx init complete\n");
+	
+	//hack for cia base directory
+	if (argc == 0) {
+		set_default_dir();
+	}
 
 	atexit(_3ds_shutdown);
 
@@ -266,8 +276,10 @@ void I_Quit(void)
 
 byte *I_ZoneBase(int *size)
 {
-	int heap = 24*1024*1024;
-	byte *ptr = hmalloc(heap);;
+	int heap = envGetHeapSize() - 8*1024*1024;
+	printf("heap size: %d\n", heap);
+	svcSleepThread(3000000000LL);
+	byte *ptr = hmalloc(heap);
 
 	*size = heap;
 	return ptr;
