@@ -21,8 +21,12 @@
 #define MOBJ_NULL -1
 #define MOBJ_XX_PLAYER -2
 #define GET_BYTE (*SavePtr.b++)
-#define GET_WORD (*SavePtr.w++)
-#define GET_LONG (*SavePtr.l++)
+
+//#define GET_WORD (*SavePtr.w++)
+#define GET_WORD get_short()
+
+//#define GET_LONG (*SavePtr.l++)
+#define GET_LONG get_int()
 #define MAX_MAPS 99
 #define BASE_SLOT 6
 #define REBORN_SLOT 7
@@ -152,6 +156,23 @@ static union
 	int *l;
 } SavePtr;
 static FILE *SavingFP;
+
+short get_short() {
+	short s;
+	unsigned char *b = (unsigned char *)&s;
+	b[0] = GET_BYTE;
+	b[1] = GET_BYTE;
+	return s;
+}
+int get_int() {
+	int i;
+	unsigned char *b = (unsigned char *)&i;
+	b[0] = GET_BYTE;
+	b[1] = GET_BYTE;
+	b[2] = GET_BYTE;
+	b[3] = GET_BYTE;
+	return i;
+}
 
 // This list has been prioritized using frequency estimates
 static thinkInfo_t ThinkerInfo[] =
@@ -1520,10 +1541,18 @@ static void UnarchiveSounds(void)
 		secNum = GET_LONG;
 		if(!polySnd)
 		{
+			if (secNum < 0 || secNum >= numsectors) {
+				printf("error secNum sectors %d", secNum);
+				exit(-1);
+			}
 			sndMobj = (mobj_t *)&sectors[secNum].soundorg;
 		}
 		else
 		{
+			if (secNum < 0 || secNum >= po_NumPolyobjs) {
+				printf("error secNum polyobs %d", secNum);
+				exit(-1);
+			}
 			sndMobj = (mobj_t *)&polyobjs[secNum].startSpot;
 		}
 		SN_StartSequence(sndMobj, sequence);

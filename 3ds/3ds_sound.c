@@ -657,8 +657,9 @@ static void I_UpdateChannels() {
 	ch = channel;
 	for (i = 0; i < MAX_CHANNELS; i++, ch++)
 	{
-		if (!ch->sfxinfo || 
-			!ch->mo ||
+		if (ch->sfxinfo  == 0 || 
+			ch->mo == 0 ||
+			players[displayplayer].mo == 0 ||
 			ch->mo == players[displayplayer].mo) {
 			continue;
 		}

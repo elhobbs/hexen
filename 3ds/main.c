@@ -889,7 +889,7 @@ fixed_t FixedDiv(fixed_t a, fixed_t b)
 static FILE *_log = 0;
 
 void* __hmalloc(size_t s, char *_file, int _line) {
-	void *p = malloc(s);
+	void *p = memalign(16, s);// malloc(s);
 #if 0
 	if (_log == 0) {
 		_log = fopen("hmalloc.txt", "w");
