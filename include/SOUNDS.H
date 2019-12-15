@@ -53,7 +53,8 @@ typedef enum
 	mus_titl,
 	mus_intr,
 	mus_cptd,
-	NUMMUSIC
+	NUMMUSIC,
+	mus_maxint = 0xffffffff
 } musicenum_t;
 
 // Sound identifiers
@@ -305,7 +306,8 @@ typedef enum
 	SFX_FIREBALL,
 	SFX_PUPPYBEAT,
 	SFX_MYSTICINCANT,
-	NUMSFX
+	NUMSFX,
+		SFX_maxint = 0xffffffff
 } sfxenum_t;
 
 #endif

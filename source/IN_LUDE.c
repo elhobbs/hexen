@@ -24,7 +24,8 @@ typedef enum
 {
 	SINGLE,
 	COOPERATIVE,
-	DEATHMATCH
+	DEATHMATCH,
+	gametype_maxint = 0xffffffff
 } gametype_t;
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------

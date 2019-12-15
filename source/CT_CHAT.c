@@ -33,7 +33,8 @@ enum
 	CT_PLR_PLAYER6,
 	CT_PLR_PLAYER7,
 	CT_PLR_PLAYER8,
-	CT_PLR_ALL
+	CT_PLR_ALL,
+	CT_PLR_maxint = 0xffffffff
 };
 
 #define CT_KEY_BLUE		'b'

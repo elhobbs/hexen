@@ -47,7 +47,8 @@ enum
 	ML_SECTORS,
 	ML_REJECT,
 	ML_BLOCKMAP,
-	ML_BEHAVIOR
+	ML_BEHAVIOR,
+	ML_maxint = 0xffffffff
 };
 
 typedef struct
@@ -134,7 +135,8 @@ enum
 	BOXTOP,
 	BOXBOTTOM,
 	BOXLEFT,
-	BOXRIGHT
+	BOXRIGHT,
+	BOX_maxint = 0xffffffff
 };
 
 #define	NF_SUBSECTOR	0x8000

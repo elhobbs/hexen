@@ -173,7 +173,8 @@ typedef enum
 	sk_easy,
 	sk_medium,
 	sk_hard,
-	sk_nightmare
+	sk_nightmare,
+	sk_maxint=0xffffffff
 } skill_t;
 
 typedef enum
@@ -183,7 +184,8 @@ typedef enum
 	ev_mouse,
 	ev_joystick,
 	ev_nub,
-	ev_cstick
+	ev_cstick,
+	ev_maxint = 0xffffffff
 } evtype_t;
 
 typedef struct
@@ -231,7 +233,8 @@ typedef enum
 	GS_LEVEL,
 	GS_INTERMISSION,
 	GS_FINALE,
-	GS_DEMOSCREEN
+	GS_DEMOSCREEN,
+	GS__maxint = 0xffffffff
 } gamestate_t;
 
 typedef enum
@@ -248,7 +251,8 @@ typedef enum
 	ga_singlereborn,
 	ga_victory,
 	ga_worlddone,
-	ga_screenshot
+	ga_screenshot,
+	ga_maxint = 0xffffffff
 } gameaction_t;
 
 typedef enum
@@ -259,7 +263,8 @@ typedef enum
 	wipe_3,
 	wipe_4,
 	NUMWIPES,
-	wipe_random
+	wipe_random,
+	wipe_maxint = 0xffffffff
 } wipe_t;
 
 /*
@@ -439,14 +444,16 @@ typedef enum
 	PCLASS_CLERIC,
 	PCLASS_MAGE,
 	PCLASS_PIG,
-	NUMCLASSES
+	NUMCLASSES,
+	PCLASS_maxint = 0xffffffff
 } pclass_t;
 
 typedef enum
 {
 	PST_LIVE,			// playing
 	PST_DEAD,			// dead on the ground
-	PST_REBORN			// ready to restart
+	PST_REBORN,			// ready to restart,
+	PST_maxint = 0xffffffff
 } playerstate_t;
 
 // psprites are scaled shapes directly on the view screen
@@ -455,7 +462,8 @@ typedef enum
 {
 	ps_weapon,
 	ps_flash,
-	NUMPSPRITES
+	NUMPSPRITES,
+	ps_maxint = 0xffffffff
 } psprnum_t;
 
 typedef struct
@@ -488,7 +496,8 @@ typedef enum
 	KEYTYPE_9,
 	KEYTYPE_A,
 	KEYTYPE_B,
-	NUMKEYS
+	NUMKEYS,
+	KEYTYPE_maxint = 0xffffffff
 } keytype_t;
 
 typedef enum
@@ -497,7 +506,8 @@ typedef enum
 	ARMOR_SHIELD,
 	ARMOR_HELMET,
 	ARMOR_AMULET,
-	NUMARMOR
+	NUMARMOR,
+	ARMOR_maxint = 0xffffffff
 } armortype_t;
 
 typedef enum
@@ -507,7 +517,8 @@ typedef enum
 	WP_THIRD,
 	WP_FOURTH,
 	NUMWEAPONS,
-	WP_NOCHANGE
+	WP_NOCHANGE,
+	WP_maxint = 0xffffffff
 } weapontype_t;
 	
 typedef enum
@@ -516,7 +527,8 @@ typedef enum
 	MANA_2,
 	NUMMANA,
 	MANA_BOTH,
-	MANA_NONE
+	MANA_NONE,
+	MANA_maxint = 0xffffffff
 } manatype_t;
 
 #define MAX_MANA	200
@@ -575,7 +587,8 @@ typedef enum
 	arti_puzzgear2,
 	arti_puzzgear3,
 	arti_puzzgear4,
-	NUMARTIFACTS
+	NUMARTIFACTS,
+	arti_maxint = 0xffffffff
 } artitype_t;
 
 typedef enum
@@ -589,7 +602,8 @@ typedef enum
 	pw_health2,
 	pw_speed,
 	pw_minotaur,
-	NUMPOWERS
+	NUMPOWERS,
+	pw_maxint = 0xffffffff
 } powertype_t;
 
 #define	INVULNTICS (30*35)
@@ -1385,7 +1399,8 @@ enum
 	SEQ_DOOR_EARTH,
 	SEQ_DOOR_METAL2,
 	SEQ_ESOUND_WIND,
-	SEQ_NUMSEQ
+	SEQ_NUMSEQ,
+	SEQ_maxint = 0xffffffff
 };
 
 typedef enum
@@ -1400,7 +1415,8 @@ typedef enum
 	SEQTYPE_ICE,
 	SEQTYPE_EARTH,
 	SEQTYPE_METAL2,
-	SEQTYPE_NUMSEQ
+	SEQTYPE_NUMSEQ,
+	SEQTYPE_maxint = 0xffffffff
 } seqtype_t;
 
 void SN_InitSequenceScript(void);

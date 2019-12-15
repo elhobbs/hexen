@@ -47,7 +47,8 @@ typedef enum
 	ASEG_PLAYERS,
 	ASEG_SOUNDS,
 	ASEG_MISC,
-	ASEG_END
+	ASEG_END,
+	ASEG_maxint = 0xffffffff
 } gameArchiveSegment_t;
 
 typedef enum
@@ -64,7 +65,8 @@ typedef enum
 	TC_BUILD_PILLAR,
 	TC_ROTATE_POLY,
 	TC_MOVE_POLY,
-	TC_POLY_DOOR
+	TC_POLY_DOOR,
+	TC_maxint = 0xffffffff
 } thinkClass_t;
 
 typedef struct

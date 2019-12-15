@@ -46,7 +46,8 @@ typedef enum
 	SS_CMD_DELAYRAND,
 	SS_CMD_VOLUME,
 	SS_CMD_STOPSOUND,
-	SS_CMD_END
+	SS_CMD_END,
+	SS_CMD_maxint = 0xffffffff
 } sscmds_t;
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------

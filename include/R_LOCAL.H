@@ -90,7 +90,8 @@ typedef enum
 	ST_HORIZONTAL,
 	ST_VERTICAL,
 	ST_POSITIVE,
-	ST_NEGATIVE
+	ST_NEGATIVE,
+	ST_maxint = 0xffffffff
 } slopetype_t;
 
 /*

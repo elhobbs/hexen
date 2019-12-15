@@ -88,7 +88,8 @@ typedef enum
 	LITE_FADE,
 	LITE_GLOW,
 	LITE_FLICKER,
-	LITE_STROBE
+	LITE_STROBE,
+	LITE_maxint = 0xffffffff
 } lighttype_t;
 
 typedef struct
@@ -202,7 +203,8 @@ typedef enum
 {
 	SWTCH_TOP,
 	SWTCH_MIDDLE,
-	SWTCH_BOTTOM
+	SWTCH_BOTTOM,
+	SWITCH_maxint = 0xffffffff
 } bwhere_e;
 
 typedef struct
@@ -237,6 +239,7 @@ typedef enum
 	PLAT_DOWN,
 	PLAT_WAITING,
 //	PLAT_IN_STASIS
+PLAT_maxint = 0xffffffff
 } plat_e;
 
 typedef enum
@@ -248,6 +251,7 @@ typedef enum
 	PLAT_UPBYVALUEWAITDOWNSTAY,
 	//PLAT_RAISEANDCHANGE,
 	//PLAT_RAISETONEARESTANDCHANGE
+	platt_maxint = 0xffffffff
 } plattype_e;
 
 typedef struct
@@ -292,6 +296,7 @@ typedef enum
 	DREV_CLOSE,
 	DREV_OPEN,
 	DREV_RAISEIN5MINS,
+	DREV_maxint = 0xffffffff
 } vldoor_e;
 
 typedef struct
@@ -331,7 +336,8 @@ typedef enum
 	CLEV_LOWERBYVALUE,
 	CLEV_RAISEBYVALUE,
 	CLEV_CRUSHRAISEANDSTAY,
-	CLEV_MOVETOVALUETIMES8
+	CLEV_MOVETOVALUETIMES8,
+	CLEV_maxint = 0xffffffff
 } ceiling_e;
 
 typedef struct
@@ -380,7 +386,8 @@ typedef enum
 	FLEV_LOWERBYVALUETIMES8,
 	FLEV_LOWERTIMES8INSTANT,
 	FLEV_RAISETIMES8INSTANT,
-	FLEV_MOVETOVALUETIMES8
+	FLEV_MOVETOVALUETIMES8,
+	FLEV_maxint = 0xffffffff
 } floor_e;
 
 typedef struct
@@ -436,14 +443,16 @@ typedef enum
 {
 	RES_OK,
 	RES_CRUSHED,
-	RES_PASTDEST
+	RES_PASTDEST,
+	RES_maxint = 0xffffffff
 } result_e;
 
 typedef enum
 {
 	STAIRS_NORMAL,
 	STAIRS_SYNC,
-	STAIRS_PHASED
+	STAIRS_PHASED,
+	STAIRS_maxint = 0xffffffff
 } stairs_e;
 
 result_e T_MovePlane(sector_t *sector, fixed_t speed,
@@ -491,7 +500,8 @@ typedef enum
 	ASTE_WAITINGFORTAG,
 	ASTE_WAITINGFORPOLY,
 	ASTE_WAITINGFORSCRIPT,
-	ASTE_TERMINATING
+	ASTE_TERMINATING,
+	ASTE_maxint = 0xffffffff
 } aste_t;
 
 typedef struct acs_s acs_t;

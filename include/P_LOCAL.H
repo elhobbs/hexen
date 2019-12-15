@@ -67,7 +67,8 @@ typedef enum
 	DI_SOUTH,
 	DI_SOUTHEAST,
 	DI_NODIR,
-	NUMDIRS
+	NUMDIRS,
+	DI_maxint = 0xffffffff
 } dirtype_t;
 
 #define BASETHRESHOLD 100 // follow a player exlusively for 3 seconds
@@ -120,7 +121,8 @@ enum
 	FLOOR_LIQUID,
 	FLOOR_WATER,
 	FLOOR_LAVA,
-	FLOOR_SLUDGE
+	FLOOR_SLUDGE,
+	FLOOR_maxint = 0xffffffff
 };
 
 #define ONFLOORZ MININT
@@ -312,6 +314,7 @@ typedef enum
 	PODOOR_NONE,
 	PODOOR_SLIDE,
 	PODOOR_SWING,
+	PODOOR_maxint = 0xffffffff
 } podoortype_t;
 
 typedef struct
@@ -344,7 +347,8 @@ enum
 {
 	PO_ANCHOR_TYPE = 3000,
 	PO_SPAWN_TYPE,
-	PO_SPAWNCRUSH_TYPE
+	PO_SPAWNCRUSH_TYPE,
+	PO_maxint = 0xffffffff
 };
 
 #define PO_LINE_START 1 // polyobj line start special

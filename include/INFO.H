@@ -301,7 +301,8 @@ SPR_RADE,
 SPR_WATR,
 SPR_KORX,
 SPR_ABAT,
-NUMSPRITES
+NUMSPRITES,
+SPR_maxint=0xffffffff
 } spritenum_t;
 
 typedef enum {
@@ -3151,7 +3152,8 @@ S_BAT1,
 S_BAT2,
 S_BAT3,
 S_BAT_DEATH,
-NUMSTATES
+NUMSTATES,
+S_maxint = 0xffffffff
 } statenum_t;
 
 typedef struct
@@ -3574,7 +3576,8 @@ MT_CENTAUR_MASH,
 MT_KORAX_BOLT,
 MT_BAT_SPAWNER,
 MT_BAT,
-NUMMOBJTYPES} mobjtype_t;
+NUMMOBJTYPES,
+MT_maxint = 0xffffffff} mobjtype_t;
 
 typedef struct {
 	int	doomednum;

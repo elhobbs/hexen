@@ -36,7 +36,8 @@ typedef enum
 	ITT_EFUNC,
 	ITT_LRFUNC,
 	ITT_SETMENU,
-	ITT_INERT
+	ITT_INERT,
+	ITT_maxint = 0xffffffff
 } ItemType_t;
 
 typedef enum
@@ -52,7 +53,8 @@ typedef enum
 	MENU_CONFIG,
 	MENU_CALIBRATE,
 	MENU_REMAP,
-	MENU_NONE
+	MENU_NONE,
+	MENU_maxint = 0xffffffff
 } MenuType_t;
 
 typedef struct
