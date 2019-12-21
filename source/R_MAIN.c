@@ -889,30 +889,35 @@ extern boolean MenuActive;
 
 void R_RenderPlayerView (player_t *player)
 {
-	float slideamt = 0.0f - *slider;
+	float slideamt = *slider;
 	int sep = (slideamt*5.0f);
-	angle_t ang = (slideamt*ANG5);
-	fixed_t vsin, vcos;
+	angle_t ang;
+	//fixed_t vsin, vcos;
+
+	if (*slider > 0.0f/* && !MenuActive*/) {
+		ang = (slideamt * ANG90/18.0f);
+		if (screen_side == 1) {
+			ang = -ang;
+		}
+
+		viewangleoffset = ang;
+	}
 
 	R_SetupFrame (player);
 
 	_viewx = viewx;
 	_viewy = viewy;
 
-	if (*slider > 0.0f && !MenuActive) {
-		if (screen_side  == 1) {
-			ang = -ang;
-			sep = -sep;
-		}
+	/*if (*slider > 0.0f && !MenuActive) {
 
 		vsin = finesine[(viewangle - ANG90) >> ANGLETOFINESHIFT];
 		vcos = finecosine[(viewangle - ANG90) >> ANGLETOFINESHIFT];
 
 		//viewangle += ang;
-		viewx -= sep * vcos;
-		viewy -= sep * vsin;
-		viewangleoffset = -sep;
-	}
+		//viewx -= sep * vcos;
+		//viewy -= sep * vsin;
+		//viewangleoffset = -sep;
+	}*/
 
 
 	R_ClearClipSegs ();

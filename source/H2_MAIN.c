@@ -662,9 +662,9 @@ static void DrawAndBlit(void)
 	}
 	else {
 		screen_side = 2;
-		if (MenuActive) {
-			screen_side = 3;
-		}
+		//if (MenuActive) {
+		//	screen_side = 3;
+		//}
 	}
 
 	for (i = 0; i < 2; i++) {

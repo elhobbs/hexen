@@ -9,6 +9,7 @@
 
 #ifdef _3DS
 u32 __stacksize__ = 512 * 1024;
+bool isN3DS;
 #endif
 
 int DisplayTicker = 0;
@@ -45,6 +46,7 @@ int main(int argc, char**argv)
 	consoleInit(GFX_BOTTOM, 0);
 	consoleSetWindow(0, 0, 0, 40, 19);
 	osSetSpeedupEnable(true);
+	APT_CheckNew3DS(&isN3DS);
 	keyboard_init();
 #endif
 
@@ -276,8 +278,16 @@ void I_Quit(void)
 
 byte *I_ZoneBase(int *size)
 {
-	int heap = envGetHeapSize() - 8*1024*1024;
-	printf("heap size: %d\n", heap);
+	int heap = envGetHeapSize();
+	/*if (isN3DS) {
+		heap = 50 * 1024 * 1024;
+	} else {
+		heap = 26 * 1024 * 1024;
+	}*/
+	printf("heap size: %d", heap);
+	heap -= 8 * 1024 * 1024;
+	printf(" %d\n", heap);
+
 	svcSleepThread(3000000000LL);
 	byte *ptr = hmalloc(heap);
 
